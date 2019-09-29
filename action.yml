@@ -1,0 +1,31 @@
+name: "Sign Add-on Action"
+author: "Philipp Kewisch <mozilla@kewis.ch>"
+description: "Run a web-ext commmand"
+inputs:
+  cmd:
+    description: "The web-ext command to run (sign, lint)"
+    required: true
+  source:
+    description: "The source xpi or path"
+    required: false
+    default: "."
+  artifacts:
+    description: "The path to put artifacts, e.g. from build or signing"
+    required: false
+  channel:
+    description: "[lint+sign] The target channel"
+    required: false
+    default: "unlisted"
+  apiKey:
+    description: "[sign] The API key used for signing"
+    required: false
+  apiSecret:
+    description: "[sign] The API secret used for signing"
+    required: false
+  apiUrlPrefix:
+    description: "[sign] The URL of the signing API, defaults to AMO production"
+    required: false
+    default: "https://addons.mozilla.org/api/v3"
+runs:
+  using: "node12"
+  main: "src/loader.js"

@@ -1,0 +1,16 @@
+{
+  "name": "action-web-ext",
+  "version": "1.0.0",
+  "description": "Run a web-ext command",
+  "main": "src/loader.js",
+  "author": "Philipp Kewisch <mozilla@kewis.ch>",
+  "license": "MPL-2.0",
+  "dependencies": {
+    "@actions/core": "^1.1.0",
+    "@actions/github": "^1.1.0",
+    "esm": "^3.2.25",
+    "sign-addon": "^0.3.1",
+    "web-ext": "^3.1.1",
+    "yauzl-promise": "github:kewisch/yauzl-promise#asyncIterator"
+  }
+}
