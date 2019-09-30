@@ -31,9 +31,13 @@ async function getManifest(xpi) {
 
     await zipFile.close();
     return manifest;
-  } else {
+  } else if (stat.isDirectory()) {
     let contents = await fs.promises.readFile(path.join(xpi, "manifest.json"), { encoding: "utf-8" });
     return JSON.parse(contents);
+  } else {
+    console.error(stat);
+    let full = path.resolve(process.cwd(), xpi);
+    throw new Error("Don't know how to handle " + full);
   }
 }
 
