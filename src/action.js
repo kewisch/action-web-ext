@@ -81,7 +81,7 @@ export default class WebExtAction {
       sourceDir: this.options.sourceDir,
       artifactsDir: this.options.artifactsDir,
       selfHosted: this.options.channel == "unlisted",
-      output: "none",
+      output: this.options.verbose ? "text" : "none",
       ignoreFiles: [".git", ".github", "web-ext-artifacts"],
     }, {
       shouldExitProgram: false
@@ -147,8 +147,6 @@ export default class WebExtAction {
       apiUrlPrefix: this.options.apiUrlPrefix,
       verbose: this.options.verbose
     });
-
-    console.log(result);
 
     if (!result.success) {
       throw new Error("The signing process has failed");

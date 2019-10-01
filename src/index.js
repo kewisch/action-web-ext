@@ -3,9 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  * Portions Copyright (C) Philipp Kewisch, 2019 */
 
-import path from "path";
-import fs from "fs";
-
 import * as core from "@actions/core";
 
 import WebExtAction from "./action";
