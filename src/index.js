@@ -31,6 +31,7 @@ async function main() {
     sourceDir: source,
     artifactsDir: artifacts,
     channel: core.getInput("channel"),
+    verbose: core.getInput("verbose") == "true",
 
     // Linting options
     token: process.env.GITHUB_TOKEN,

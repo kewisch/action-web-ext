@@ -145,7 +145,7 @@ export default class WebExtAction {
       apiKey: this.options.apiKey,
       apiSecret: this.options.apiSecret,
       apiUrlPrefix: this.options.apiUrlPrefix,
-      verbose: true
+      verbose: this.options.verbose
     });
 
     console.log(result);

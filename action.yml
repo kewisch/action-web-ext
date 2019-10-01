@@ -3,7 +3,7 @@ author: "Philipp Kewisch <mozilla@kewis.ch>"
 description: "Run a web-ext commmand"
 inputs:
   cmd:
-    description: "The web-ext command to run (sign, lint)"
+    description: "The web-ext command to run (lint, build, sign)"
     required: true
   source:
     description: "The source xpi or path"
@@ -12,6 +12,10 @@ inputs:
   artifacts:
     description: "The path to put artifacts, e.g. from build or signing"
     required: false
+  verbose:
+    description: "More debugging fore certain steps"
+    required: false
+    default: false
   channel:
     description: "[lint+sign] The target channel"
     required: false
