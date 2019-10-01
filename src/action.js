@@ -148,14 +148,17 @@ export default class WebExtAction {
       verbose: this.options.verbose
     });
 
-    if (!result.success) {
+    if (this.options.channel == "listed") {
+      // It might have worked, we won't know until https://github.com/mozilla/sign-addon/pull/314
+      return { addon_id: id, target: null };
+    } else if (result.success) {
+      console.log("Downloaded these files: " + result.downloadedFiles);
+      return {
+        addon_id: result.id,
+        target: result.downloadedFiles[0]
+      };
+    } else {
       throw new Error("The signing process has failed");
     }
-
-    console.log("Downloaded these files: " + result.downloadedFiles);
-    return {
-      addon_id: result.id,
-      target: result.downloadedFiles[0]
-    };
   }
 }
