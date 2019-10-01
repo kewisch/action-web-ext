@@ -9,7 +9,7 @@
 // Requirements
 //------------------------------------------------------------------------------
 
-const astUtils = require("../util/ast-utils");
+const astUtils = require("./utils/ast-utils");
 
 //------------------------------------------------------------------------------
 // Constants
@@ -279,6 +279,12 @@ module.exports = {
                                 description: settings.description
                             },
                             fix(fixer) {
+                                if (quoteOption === "backtick" && astUtils.hasOctalEscapeSequence(rawVal)) {
+
+                                    // An octal escape sequence in a template literal would produce syntax error, even in non-strict mode.
+                                    return null;
+                                }
+
                                 return fixer.replaceText(node, settings.convert(node.raw));
                             }
                         });

@@ -9,7 +9,7 @@
 // Requirements
 //------------------------------------------------------------------------------
 
-const astUtils = require("../util/ast-utils");
+const astUtils = require("./utils/ast-utils");
 
 //------------------------------------------------------------------------------
 // Helpers
@@ -94,9 +94,19 @@ function eachSelfAssignment(left, right, props, report) {
         const end = Math.min(left.elements.length, right.elements.length);
 
         for (let i = 0; i < end; ++i) {
+            const leftElement = left.elements[i];
             const rightElement = right.elements[i];
 
-            eachSelfAssignment(left.elements[i], rightElement, props, report);
+            // Avoid cases such as [...a] = [...a, 1]
+            if (
+                leftElement &&
+                leftElement.type === "RestElement" &&
+                i < right.elements.length - 1
+            ) {
+                break;
+            }
+
+            eachSelfAssignment(leftElement, rightElement, props, report);
 
             // After a spread element, those indices are unknown.
             if (rightElement && rightElement.type === "SpreadElement") {
@@ -142,13 +152,14 @@ function eachSelfAssignment(left, right, props, report) {
     } else if (
         left.type === "Property" &&
         right.type === "Property" &&
-        !left.computed &&
-        !right.computed &&
         right.kind === "init" &&
-        !right.method &&
-        left.key.name === right.key.name
+        !right.method
     ) {
-        eachSelfAssignment(left.value, right.value, props, report);
+        const leftName = astUtils.getStaticPropertyName(left);
+
+        if (leftName !== null && leftName === astUtils.getStaticPropertyName(right)) {
+            eachSelfAssignment(left.value, right.value, props, report);
+        }
     } else if (
         props &&
         left.type === "MemberExpression" &&
