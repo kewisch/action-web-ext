@@ -84,7 +84,7 @@ jobs:
 sign
 ----
 
-Send the add-on for signature to AMO.
+Send the add-on for signature to AMO. To reduce the load on AMO servers, please don't use this for on-commit or nightly builds. If you want to test your add-on you can do so in `about:debugging`. Using this for betas or releases is great though, especially in combination with [softprops/action-gh-release](https://github.com/softprops/action-gh-release).
 
 Under the hood, the action uses [mozilla/sign-addon](https://github.com/mozilla/sign-addon)
 directly. Please note that when using the `listed` channel this action will always succeed. Things
@@ -97,10 +97,6 @@ You can use the following extra options:
 * `apiUrlPrefix`: The URL of the signing API, defaults to AMO production
 
 Changing apiUrlPrefix will allow you to submit to addons.thunderbird.net or using the staging/dev instance.
-
-This example uses the excellent
-[softprops/action-gh-release](https://github.com/softprops/action-gh-release) to create a GitHub
-release when tagging a commit and will sign the add-on and attach it as an asset.
 
 ```yaml
 name: "Release"
