@@ -12,6 +12,7 @@ inputs:
   artifacts:
     description: "The path to put artifacts, e.g. from build or signing"
     required: false
+    default: "web-ext-artifacts"
   verbose:
     description: "More debugging fore certain steps"
     required: false

@@ -18,18 +18,10 @@ function mask(value) {
 }
 
 async function main() {
-  let source = core.getInput("source", { required: true });
-  let artifacts = core.getInput("artifacts");
-  if (!artifacts) {
-    let stat = await fs.promises.lstat(source);
-    let basePath = stat.isFile() ? process.cwd() : source;
-    artifacts = path.join(basePath, "web-ext-artifacts");
-  }
-
   let action = new WebExtAction({
     // Common options
-    sourceDir: source,
-    artifactsDir: artifacts,
+    sourceDir: core.getInput("source", { required: true }),
+    artifactsDir: core.getInput("artifacts"),
     channel: core.getInput("channel"),
     verbose: core.getInput("verbose") == "true",
 
