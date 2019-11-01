@@ -17,3 +17,69 @@ jobs:
         uses: gimenete/eslint-action@1.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  test:
+    name: "Test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v1
+
+      - name: "Bump version"
+        run: |
+          export VERSION="1.$(echo ${GITHUB_SHA:0:4} | tr abcdef 123456).$(echo ${GITHUB_SHA:4:4} | tr abcdef 123456)"
+          jq ".version = \"$VERSION\"" test/extension/manifest.json > manifest.json~
+          mv manifest.json~ test/extension/manifest.json
+          git diff
+
+      - name: "Self-test: lint"
+        id: web-ext-lint
+        uses: "./"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          cmd: lint
+          source: test/extension
+          channel: unlisted
+
+      - name: "Self-test: build"
+        id: web-ext-build
+        uses: "./"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          cmd: build
+          source: test/extension
+          channel: unlisted
+
+      - name: "Self-test: AMO release"
+        id: web-ext-sign-amo
+        uses: "./"
+        with:
+          cmd: sign
+          source: ${{ steps.web-ext-build.outputs.target }}
+          channel: unlisted
+          apiKey: ${{ secrets.AMO_SIGN_KEY }}
+          apiSecret: ${{ secrets.AMO_SIGN_SECRET }}
+
+      - name: "Self-test: ATN release"
+        id: web-ext-sign-atn
+        uses: "./"
+        with:
+          cmd: sign
+          source: ${{ steps.web-ext-build.outputs.target }}
+          channel: unlisted
+          apiUrlPrefix: "https://addons.thunderbird.net/api/v3"
+          apiKey: ${{ secrets.ATN_SIGN_KEY }}
+          apiSecret: ${{ secrets.ATN_SIGN_SECRET }}
+
+      - name: "Upload Unsigned"
+        uses: actions/upload-artifact@master
+        with:
+          name: unsigned.xpi
+          path: ${{ steps.web-ext-build.outputs.target }}
+
+      - name: "Upload AMO signed"
+        uses: actions/upload-artifact@master
+        with:
+          name: amo-signed.xpi
+          path: ${{ steps.web-ext-sign-amo.outputs.target }}

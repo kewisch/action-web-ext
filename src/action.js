@@ -12,6 +12,7 @@ import yauzl from "yauzl-promise";
 import getStream from "get-stream";
 
 import * as github from "@actions/github";
+import * as core from "@actions/core";
 
 import CheckRun from "./checkrun";
 
@@ -136,17 +137,30 @@ export default class WebExtAction {
 
     console.log(`Signing ${manifest.name} ${manifest.version}...`);
 
-    let result = await signAddon({
-      xpiPath: this.options.sourceDir,
-      channel: this.options.channel,
-      id: id,
-      version: manifest.version,
-      downloadDir: this.options.artifactsDir,
-      apiKey: this.options.apiKey,
-      apiSecret: this.options.apiSecret,
-      apiUrlPrefix: this.options.apiUrlPrefix,
-      verbose: this.options.verbose
-    });
+    let result;
+    try {
+      result = await signAddon({
+        xpiPath: this.options.sourceDir,
+        channel: this.options.channel,
+        id: id,
+        version: manifest.version,
+        downloadDir: this.options.artifactsDir,
+        apiKey: this.options.apiKey,
+        apiSecret: this.options.apiSecret,
+        apiUrlPrefix: this.options.apiUrlPrefix,
+        verbose: this.options.verbose
+      });
+    } catch (e) {
+      if (
+        e.message.includes("The XPI was processed but no signed files were found") &&
+        this.options.apiUrlPrefix.includes("thunderbird")
+      ) {
+        core.warning("You are signing for Thunderbird, which currently doesn't have signing enabled.");
+        return { addon_id: id, target: this.options.sourceDir };
+      } else {
+        throw e;
+      }
+    }
 
     if (this.options.channel == "listed") {
       // It might have worked, we won't know until https://github.com/mozilla/sign-addon/pull/314
