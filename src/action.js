@@ -60,7 +60,7 @@ export default class WebExtAction {
     function linterToAnnotation(message) {
       let level = message._type == "error" ? "failure" : message._type;
       return {
-        path: message.file,
+        path: message.file || "none",
         start_line: message.line || 1,
         end_line: message.line || 1,
         start_column: message.column,
