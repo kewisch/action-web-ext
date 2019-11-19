@@ -1,4 +1,4 @@
-name: "Sign Add-on Action"
+name: "web-ext Action for Firefox Add-ons"
 author: "Philipp Kewisch <mozilla@kewis.ch>"
 description: "Run a web-ext commmand"
 branding:
