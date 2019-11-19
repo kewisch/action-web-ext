@@ -1,6 +1,9 @@
 name: "Sign Add-on Action"
 author: "Philipp Kewisch <mozilla@kewis.ch>"
 description: "Run a web-ext commmand"
+branding:
+  icon: "box"
+  color: "gray-dark"
 inputs:
   cmd:
     description: "The web-ext command to run (lint, build, sign)"
