@@ -97,6 +97,7 @@ You can use the following extra options:
 * `apiKey`: The API key used for signing
 * `apiSecret`: The API secret used for signing
 * `apiUrlPrefix`: The URL of the signing API, defaults to AMO production
+* `timeout`: The number of milliseconds to wait before giving up on a response from Mozilla's web service. Defaults to 900000 ms (15 minutes).
 
 Changing apiUrlPrefix will allow you to submit to addons.thunderbird.net or using the staging/dev instance.
 
@@ -131,6 +132,7 @@ jobs:
           channel: unlisted
           apiKey: ${{ secrets.AMO_SIGN_KEY }}
           apiSecret: ${{ secrets.AMO_SIGN_SECRET }}
+          timeout: 900000
 
       - name: "Create Release"
         uses: softprops/action-gh-release@v1

@@ -34,6 +34,12 @@ inputs:
     description: "[sign] The URL of the signing API, defaults to AMO production"
     required: false
     default: "https://addons.mozilla.org/api/v3"
+  timeout:
+    description: |
+      [sign] The number of milliseconds to wait before giving up on a response
+      from Mozilla's web service. Defaults to 900000 ms (15 minutes).
+    required: false
+    default: 900000
 runs:
   using: "node12"
   main: "src/loader.js"
