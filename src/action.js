@@ -7,7 +7,7 @@ import path from "path";
 import fs from "fs";
 
 import webExt from "web-ext";
-import signAddon from "sign-addon";
+import { signAddon } from "sign-addon";
 import yauzl from "yauzl-promise";
 import getStream from "get-stream";
 
