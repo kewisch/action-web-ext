@@ -1,6 +1,6 @@
 {
   "name": "action-web-ext",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Run a web-ext command",
   "repository": {
     "type": "git",
