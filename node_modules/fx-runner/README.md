@@ -1,7 +1,7 @@
 # Firefox Runner
 
-[![Build Status](http://img.shields.io/travis/mozilla-jetpack/node-fx-runner.svg?style=flat-square)](https://travis-ci.org/mozilla-jetpack/node-fx-runner)
-[![Build Status](http://img.shields.io/npm/v/fx-runner.svg?style=flat-square)](https://www.npmjs.org/package/fx-runner)
+[![Build Status](https://img.shields.io/travis/mozilla-jetpack/node-fx-runner.svg?style=flat-square)](https://travis-ci.org/mozilla-jetpack/node-fx-runner)
+[![Build Status](https://img.shields.io/npm/v/fx-runner.svg?style=flat-square)](https://www.npmjs.org/package/fx-runner)
 
 [![NPM](https://nodei.co/npm/fx-runner.png?stars&downloads)](https://nodei.co/npm/fx-runner/)
 [![NPM](https://nodei.co/npm-dl/fx-runner.png)](https://nodei.co/npm/fx-runner)

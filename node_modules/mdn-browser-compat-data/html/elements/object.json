@@ -12,10 +12,7 @@
               "version_added": true
             },
             "edge": {
-              "version_added": true
-            },
-            "edge_mobile": {
-              "version_added": true
+              "version_added": "12"
             },
             "firefox": {
               "version_added": "1"
@@ -61,10 +58,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -111,10 +105,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -161,10 +152,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -211,10 +199,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -261,10 +246,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -311,10 +293,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -361,10 +340,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -411,10 +387,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -461,10 +434,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -511,10 +481,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -561,10 +528,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -611,10 +575,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -661,10 +622,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -711,10 +669,7 @@
                 "version_added": null
               },
               "edge": {
-                "version_added": false
-              },
-              "edge_mobile": {
-                "version_added": false
+                "version_added": null
               },
               "firefox": {
                 "version_added": "27"
@@ -761,10 +716,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"
@@ -811,10 +763,7 @@
                 "version_added": true
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": {
                 "version_added": "1"

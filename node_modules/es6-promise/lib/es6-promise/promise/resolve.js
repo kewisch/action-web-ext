@@ -8,7 +8,7 @@ import {
   passed `value`. It is shorthand for the following:
 
   ```javascript
-  let promise = new Promise(function(resolve, reject){
+  var promise = new Promise(function(resolve, reject){
     resolve(1);
   });
 
@@ -20,7 +20,7 @@ import {
   Instead of writing the above, your code now simply becomes the following:
 
   ```javascript
-  let promise = Promise.resolve(1);
+  var promise = Promise.resolve(1);
 
   promise.then(function(value){
     // value === 1
@@ -36,13 +36,13 @@ import {
 */
 export default function resolve(object) {
   /*jshint validthis:true */
-  let Constructor = this;
+  var Constructor = this;
 
   if (object && typeof object === 'object' && object.constructor === Constructor) {
     return object;
   }
 
-  let promise = new Constructor(noop);
+  var promise = new Constructor(noop);
   _resolve(promise, object);
   return promise;
 }

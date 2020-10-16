@@ -23,10 +23,17 @@ const prefsCommon: FirefoxPreferences = {
   // Allow debug output via dump to be printed to the system console
   'browser.dom.window.dump.enabled': true,
 
+  // From:
+  // https://firefox-source-docs.mozilla.org/toolkit/components/telemetry/internals/preferences.html#data-choices-notification
+  // This is the data submission master kill switch. If disabled, no policy is shown or upload takes place, ever.
+  'datareporting.policy.dataSubmissionEnabled': false,
+
   // Allow remote connections to the debugger.
   'devtools.debugger.remote-enabled': true,
   // Disable the prompt for allowing connections.
   'devtools.debugger.prompt-connection': false,
+  // Allow extensions to log messages on browser's console.
+  'devtools.browserconsole.contentMessages': true,
 
   // Turn off platform logging because it is a lot of info.
   'extensions.logging.enabled': false,
@@ -53,16 +60,17 @@ const prefsCommon: FirefoxPreferences = {
 
   // Allow unsigned add-ons.
   'xpinstall.signatures.required': false,
+
+  // browser.link.open_newwindow is changed from 3 to 2 in:
+  // https://github.com/saadtazi/firefox-profile-js/blob/cafc793d940a779d280103ae17d02a92de862efc/lib/firefox_profile.js#L32
+  // Restore original value to avoid https://github.com/mozilla/web-ext/issues/1592
+  'browser.link.open_newwindow': 3,
 };
 
 // Prefs specific to Firefox for Android.
 const prefsFennec: FirefoxPreferences = {
   'browser.console.showInPanel': true,
   'browser.firstrun.show.uidiscovery': false,
-  // browser.link.open_newwindow is changed from 3 to 2 in:
-  // https://github.com/saadtazi/firefox-profile-js/blob/cafc793d940a779d280103ae17d02a92de862efc/lib/firefox_profile.js#L32
-  // Restore original value to avoid https://github.com/mozilla/web-ext/issues/1592
-  'browser.link.open_newwindow': 3,
   'devtools.remote.usb.enabled': true,
 };
 

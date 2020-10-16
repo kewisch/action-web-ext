@@ -11,10 +11,8 @@
             "version_added": "57"
           },
           "edge": {
-            "version_added": true
-          },
-          "edge_mobile": {
-            "version_added": true
+            "version_added": "≤18",
+            "version_removed": "79"
           },
           "firefox": {
             "version_added": "56",
@@ -87,10 +85,8 @@
               "version_added": "57"
             },
             "edge": {
-              "version_added": true
-            },
-            "edge_mobile": {
-              "version_added": true
+              "version_added": "≤18",
+              "version_removed": "79"
             },
             "firefox": {
               "version_added": "56",
@@ -154,10 +150,8 @@
               "version_added": "57"
             },
             "edge": {
-              "version_added": true
-            },
-            "edge_mobile": {
-              "version_added": true
+              "version_added": "≤18",
+              "version_removed": "79"
             },
             "firefox": {
               "version_added": "56",

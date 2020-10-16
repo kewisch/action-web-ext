@@ -6,6 +6,6 @@ global.appRoot = path.relative(process.cwd(), path.resolve(__dirname));
 require('../dist/dispensary')
   .createInstance()
   .run()
-  .catch(function(err) {
+  .catch(function (err) {
     console.error('Uncaught error', err);
   });

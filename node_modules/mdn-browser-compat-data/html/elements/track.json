@@ -13,10 +13,7 @@
               "notes": "Doesn't work for fullscreen video."
             },
             "edge": {
-              "version_added": true
-            },
-            "edge_mobile": {
-              "version_added": true
+              "version_added": "12"
             },
             "firefox": [
               {
@@ -63,10 +60,11 @@
               "version_added": "6"
             },
             "safari_ios": {
-              "version_added": null
+              "version_added": "6"
             },
             "samsunginternet_android": {
-              "version_added": true
+              "version_added": "1.5",
+              "notes": "Doesn't work for fullscreen video."
             },
             "webview_android": {
               "version_added": true,
@@ -89,10 +87,7 @@
                 "version_added": "25"
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": [
                 {
@@ -142,7 +137,7 @@
                 "version_added": null
               },
               "samsunginternet_android": {
-                "version_added": true
+                "version_added": "1.5"
               },
               "webview_android": {
                 "version_added": "4.4"
@@ -165,10 +160,7 @@
                 "version_added": "25"
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": [
                 {
@@ -218,7 +210,7 @@
                 "version_added": null
               },
               "samsunginternet_android": {
-                "version_added": true
+                "version_added": "1.5"
               },
               "webview_android": {
                 "version_added": "4.4"
@@ -241,10 +233,7 @@
                 "version_added": "25"
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": [
                 {
@@ -294,7 +283,7 @@
                 "version_added": null
               },
               "samsunginternet_android": {
-                "version_added": true
+                "version_added": "1.5"
               },
               "webview_android": {
                 "version_added": "4.4"
@@ -317,10 +306,7 @@
                 "version_added": "25"
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": [
                 {
@@ -370,7 +356,7 @@
                 "version_added": null
               },
               "samsunginternet_android": {
-                "version_added": true
+                "version_added": "1.5"
               },
               "webview_android": {
                 "version_added": "4.4"
@@ -393,10 +379,7 @@
                   "version_added": null
                 },
                 "edge": {
-                  "version_added": true
-                },
-                "edge_mobile": {
-                  "version_added": true
+                  "version_added": "≤18"
                 },
                 "firefox": {
                   "version_added": "50",
@@ -446,10 +429,7 @@
                 "version_added": "25"
               },
               "edge": {
-                "version_added": true
-              },
-              "edge_mobile": {
-                "version_added": true
+                "version_added": "12"
               },
               "firefox": [
                 {
@@ -499,7 +479,7 @@
                 "version_added": null
               },
               "samsunginternet_android": {
-                "version_added": true
+                "version_added": "1.5"
               },
               "webview_android": {
                 "version_added": "4.4"
