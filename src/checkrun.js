@@ -11,7 +11,7 @@ export default class CheckRun {
     this.context = context;
 
     this.id = null;
-    this.octokit = new github.GitHub(token);
+    this.octokit = github.getOctokit(token);
     this.ready = (token != null);
   }
 
