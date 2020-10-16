@@ -1,0 +1,13 @@
+# exclude everything by default
+*.*
+# exclude these directories
+/dist/
+/node_modules/
+/build/
+/config/
+/coverage/
+*.txt
+LICENSE
+# white-list files we want to process
+!*.js
+!*.md

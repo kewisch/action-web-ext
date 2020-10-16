@@ -11,10 +11,7 @@
             "version_added": "45"
           },
           "edge": {
-            "version_added": true
-          },
-          "edge_mobile": {
-            "version_added": true
+            "version_added": "≤18"
           },
           "firefox": {
             "version_added": "20"
@@ -36,6 +33,9 @@
           },
           "safari_ios": {
             "version_added": false
+          },
+          "samsunginternet_android": {
+            "version_added": "5.0"
           },
           "webview_android": {
             "version_added": "45"

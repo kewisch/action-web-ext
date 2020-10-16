@@ -11,10 +11,7 @@
             "version_added": false
           },
           "edge": {
-            "version_added": null
-          },
-          "edge_mobile": {
-            "version_added": null
+            "version_added": false
           },
           "firefox": [
             {
@@ -66,7 +63,7 @@
             "version_added": false
           },
           "samsunginternet_android": {
-            "version_added": null
+            "version_added": false
           },
           "webview_android": {
             "version_added": false
@@ -89,10 +86,7 @@
               "version_added": false
             },
             "edge": {
-              "version_added": null
-            },
-            "edge_mobile": {
-              "version_added": null
+              "version_added": false
             },
             "firefox": [
               {
@@ -144,7 +138,7 @@
               "version_added": false
             },
             "samsunginternet_android": {
-              "version_added": null
+              "version_added": false
             },
             "webview_android": {
               "version_added": false
@@ -168,10 +162,7 @@
               "version_added": false
             },
             "edge": {
-              "version_added": null
-            },
-            "edge_mobile": {
-              "version_added": null
+              "version_added": false
             },
             "firefox": [
               {
@@ -223,7 +214,7 @@
               "version_added": false
             },
             "samsunginternet_android": {
-              "version_added": null
+              "version_added": false
             },
             "webview_android": {
               "version_added": false
@@ -247,10 +238,7 @@
               "version_added": false
             },
             "edge": {
-              "version_added": null
-            },
-            "edge_mobile": {
-              "version_added": null
+              "version_added": false
             },
             "firefox": [
               {
@@ -302,7 +290,7 @@
               "version_added": false
             },
             "samsunginternet_android": {
-              "version_added": null
+              "version_added": false
             },
             "webview_android": {
               "version_added": false

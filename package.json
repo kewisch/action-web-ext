@@ -2,15 +2,19 @@
   "name": "action-web-ext",
   "version": "1.0.0",
   "description": "Run a web-ext command",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kewisch/action-web-ext.git"
+  },
   "main": "src/loader.js",
   "author": "Philipp Kewisch <mozilla@kewis.ch>",
   "license": "MPL-2.0",
   "dependencies": {
-    "@actions/core": "^1.1.0",
-    "@actions/github": "^1.1.0",
+    "@actions/core": "^1.2.6",
+    "@actions/github": "^4.0.0",
     "esm": "^3.2.25",
-    "sign-addon": "^0.3.1",
-    "web-ext": "^3.1.1",
+    "sign-addon": "^3.1.0",
+    "web-ext": "^5.2.0",
     "yauzl-promise": "github:kewisch/yauzl-promise#asyncIterator"
   },
   "devDependencies": {

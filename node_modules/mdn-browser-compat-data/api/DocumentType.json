@@ -11,10 +11,7 @@
             "version_added": true
           },
           "edge": {
-            "version_added": true
-          },
-          "edge_mobile": {
-            "version_added": true
+            "version_added": "12"
           },
           "firefox": {
             "version_added": "1"
@@ -35,6 +32,9 @@
             "version_added": true
           },
           "safari_ios": {
+            "version_added": true
+          },
+          "samsunginternet_android": {
             "version_added": true
           },
           "webview_android": {
@@ -58,10 +58,8 @@
               "version_added": false
             },
             "edge": {
-              "version_added": "12"
-            },
-            "edge_mobile": {
-              "version_added": false
+              "version_added": "12",
+              "version_removed": "79"
             },
             "firefox": {
               "version_added": "1",
@@ -86,6 +84,9 @@
             "safari_ios": {
               "version_added": false
             },
+            "samsunginternet_android": {
+              "version_added": false
+            },
             "webview_android": {
               "version_added": false
             }
@@ -108,10 +109,8 @@
               "version_added": false
             },
             "edge": {
-              "version_added": "12"
-            },
-            "edge_mobile": {
-              "version_added": false
+              "version_added": "12",
+              "version_removed": "79"
             },
             "firefox": {
               "version_added": false
@@ -132,6 +131,9 @@
               "version_added": false
             },
             "safari_ios": {
+              "version_added": false
+            },
+            "samsunginternet_android": {
               "version_added": false
             },
             "webview_android": {
@@ -158,9 +160,6 @@
             "edge": {
               "version_added": "12"
             },
-            "edge_mobile": {
-              "version_added": true
-            },
             "firefox": {
               "version_added": "1"
             },
@@ -180,6 +179,9 @@
               "version_added": true
             },
             "safari_ios": {
+              "version_added": true
+            },
+            "samsunginternet_android": {
               "version_added": true
             },
             "webview_android": {
@@ -204,10 +206,8 @@
               "version_added": false
             },
             "edge": {
-              "version_added": "12"
-            },
-            "edge_mobile": {
-              "version_added": false
+              "version_added": "12",
+              "version_removed": "79"
             },
             "firefox": {
               "version_added": "1",
@@ -230,6 +230,9 @@
               "version_added": false
             },
             "safari_ios": {
+              "version_added": false
+            },
+            "samsunginternet_android": {
               "version_added": false
             },
             "webview_android": {
@@ -256,9 +259,6 @@
             "edge": {
               "version_added": "12"
             },
-            "edge_mobile": {
-              "version_added": true
-            },
             "firefox": {
               "version_added": "1"
             },
@@ -278,6 +278,9 @@
               "version_added": true
             },
             "safari_ios": {
+              "version_added": true
+            },
+            "samsunginternet_android": {
               "version_added": true
             },
             "webview_android": {
@@ -304,9 +307,6 @@
             "edge": {
               "version_added": "12"
             },
-            "edge_mobile": {
-              "version_added": true
-            },
             "firefox": {
               "version_added": "1"
             },
@@ -326,6 +326,9 @@
               "version_added": true
             },
             "safari_ios": {
+              "version_added": true
+            },
+            "samsunginternet_android": {
               "version_added": true
             },
             "webview_android": {

@@ -1,20 +1,26 @@
 'use strict';
 const {Duplex: DuplexStream} = require('stream');
 
+const stop = Symbol('FirstChunkStream.stop');
+
 class FirstChunkStream extends DuplexStream {
-	constructor(options = {}, callback) {
+	constructor(options, callback) {
 		const state = {
 			sent: false,
 			chunks: [],
 			size: 0
 		};
 
+		if (typeof options !== 'object' || options === null) {
+			throw new TypeError('FirstChunkStream constructor requires `options` to be an object.');
+		}
+
 		if (typeof callback !== 'function') {
 			throw new TypeError('FirstChunkStream constructor requires a callback as its second argument.');
 		}
 
-		if (typeof options.chunkLength !== 'number') {
-			throw new TypeError('FirstChunkStream constructor requires `options.chunkLength` to be a number.');
+		if (typeof options.chunkSize !== 'number') {
+			throw new TypeError('FirstChunkStream constructor requires `options.chunkSize` to be a number.');
 		}
 
 		if (options.objectMode) {
@@ -26,59 +32,46 @@ class FirstChunkStream extends DuplexStream {
 		// Initialize the internal state
 		state.manager = createReadStreamBackpressureManager(this);
 
-		// Errors management
-		// We need to execute the callback or emit en error dependending on the fact
-		// the firstChunk is sent or not
-		state.errorHandler = error => {
-			processCallback(error, Buffer.concat(state.chunks, state.size), state.encoding);
-		};
-
-		this.on('error', state.errorHandler);
-
-		// Callback management
-		const processCallback = (error, buffer, encoding, done = () => {}) => {
-			// When doing sync writes + emitting an errror it can happen that
-			// Remove the error listener on the next tick if an error where fired
-			// to avoid unwanted error throwing
-			if (error) {
-				setImmediate(() => this.removeListener('error', state.errorHandler));
-			} else {
-				this.removeListener('error', state.errorHandler);
-			}
-
+		const processCallback = (buffer, encoding, done) => {
 			state.sent = true;
 
-			callback(error, buffer, encoding, (error, buffer, encoding) => {
-				if (error) {
-					setImmediate(() => this.emit('error', error));
+			(async () => {
+				let result;
+				try {
+					result = await callback(buffer, encoding);
+				} catch (error) {
+					setImmediate(() => {
+						this.emit('error', error);
+						done();
+					});
 					return;
 				}
 
-				if (!buffer) {
-					done();
-					return;
+				if (result === stop) {
+					state.manager.programPush(null, undefined, done);
+				} else if (Buffer.isBuffer(result) || (result instanceof Uint8Array) || (typeof result === 'string')) {
+					state.manager.programPush(result, undefined, done);
+				} else {
+					state.manager.programPush(result.buffer, result.encoding, done);
 				}
-
-				state.manager.programPush(buffer, encoding, done);
-			});
+			})();
 		};
 
 		// Writes management
 		this._write = (chunk, encoding, done) => {
 			state.encoding = encoding;
-
 			if (state.sent) {
 				state.manager.programPush(chunk, state.encoding, done);
-			} else if (chunk.length < options.chunkLength - state.size) {
+			} else if (chunk.length < options.chunkSize - state.size) {
 				state.chunks.push(chunk);
 				state.size += chunk.length;
 				done();
 			} else {
-				state.chunks.push(chunk.slice(0, options.chunkLength - state.size));
-				chunk = chunk.slice(options.chunkLength - state.size);
+				state.chunks.push(chunk.slice(0, options.chunkSize - state.size));
+				chunk = chunk.slice(options.chunkSize - state.size);
 				state.size += state.chunks[state.chunks.length - 1].length;
 
-				processCallback(null, Buffer.concat(state.chunks, state.size), state.encoding, () => {
+				processCallback(Buffer.concat(state.chunks, state.size), state.encoding, () => {
 					if (chunk.length === 0) {
 						done();
 						return;
@@ -91,7 +84,7 @@ class FirstChunkStream extends DuplexStream {
 
 		this.on('finish', () => {
 			if (!state.sent) {
-				return processCallback(null, Buffer.concat(state.chunks, state.size), state.encoding, () => {
+				return processCallback(Buffer.concat(state.chunks, state.size), state.encoding, () => {
 					state.manager.programPush(null, state.encoding);
 				});
 			}
@@ -145,5 +138,7 @@ function createReadStreamBackpressureManager(readableStream) {
 
 	return manager;
 }
+
+FirstChunkStream.stop = stop;
 
 module.exports = FirstChunkStream;

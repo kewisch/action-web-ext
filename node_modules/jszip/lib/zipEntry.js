@@ -1,31 +1,12 @@
 'use strict';
-var readerFor = require('./reader/readerFor');
+var StringReader = require('./stringReader');
 var utils = require('./utils');
 var CompressedObject = require('./compressedObject');
-var crc32fn = require('./crc32');
-var utf8 = require('./utf8');
-var compressions = require('./compressions');
+var jszipProto = require('./object');
 var support = require('./support');
 
 var MADE_BY_DOS = 0x00;
 var MADE_BY_UNIX = 0x03;
-
-/**
- * Find a compression registered in JSZip.
- * @param {string} compressionMethod the method magic to find.
- * @return {Object|null} the JSZip compression object, null if none found.
- */
-var findCompression = function(compressionMethod) {
-    for (var method in compressions) {
-        if (!compressions.hasOwnProperty(method)) {
-            continue;
-        }
-        if (compressions[method].magic === compressionMethod) {
-            return compressions[method];
-        }
-    }
-    return null;
-};
 
 // class ZipEntry {{{
 /**
@@ -56,6 +37,45 @@ ZipEntry.prototype = {
         return (this.bitFlag & 0x0800) === 0x0800;
     },
     /**
+     * Prepare the function used to generate the compressed content from this ZipFile.
+     * @param {DataReader} reader the reader to use.
+     * @param {number} from the offset from where we should read the data.
+     * @param {number} length the length of the data to read.
+     * @return {Function} the callback to get the compressed content (the type depends of the DataReader class).
+     */
+    prepareCompressedContent: function(reader, from, length) {
+        return function() {
+            var previousIndex = reader.index;
+            reader.setIndex(from);
+            var compressedFileData = reader.readData(length);
+            reader.setIndex(previousIndex);
+
+            return compressedFileData;
+        };
+    },
+    /**
+     * Prepare the function used to generate the uncompressed content from this ZipFile.
+     * @param {DataReader} reader the reader to use.
+     * @param {number} from the offset from where we should read the data.
+     * @param {number} length the length of the data to read.
+     * @param {JSZip.compression} compression the compression used on this file.
+     * @param {number} uncompressedSize the uncompressed size to expect.
+     * @return {Function} the callback to get the uncompressed content (the type depends of the DataReader class).
+     */
+    prepareContent: function(reader, from, length, compression, uncompressedSize) {
+        return function() {
+
+            var compressedFileData = utils.transformTo(compression.uncompressInputType, this.getCompressedContent());
+            var uncompressedFileData = compression.uncompress(compressedFileData);
+
+            if (uncompressedFileData.length !== uncompressedSize) {
+                throw new Error("Bug : uncompressed data size mismatch");
+            }
+
+            return uncompressedFileData;
+        };
+    },
+    /**
      * Read the local part of a zip file and add the info in this object.
      * @param {DataReader} reader the reader to use.
      */
@@ -81,19 +101,32 @@ ZipEntry.prototype = {
         // Unfortunately, this lead also to some issues : http://seclists.org/fulldisclosure/2009/Sep/394
         this.fileNameLength = reader.readInt(2);
         localExtraFieldsLength = reader.readInt(2); // can't be sure this will be the same as the central dir
-        // the fileName is stored as binary data, the handleUTF8 method will take care of the encoding.
         this.fileName = reader.readData(this.fileNameLength);
         reader.skip(localExtraFieldsLength);
 
-        if (this.compressedSize === -1 || this.uncompressedSize === -1) {
-            throw new Error("Bug or corrupted zip : didn't get enough informations from the central directory " + "(compressedSize === -1 || uncompressedSize === -1)");
+        if (this.compressedSize == -1 || this.uncompressedSize == -1) {
+            throw new Error("Bug or corrupted zip : didn't get enough informations from the central directory " + "(compressedSize == -1 || uncompressedSize == -1)");
         }
 
-        compression = findCompression(this.compressionMethod);
+        compression = utils.findCompression(this.compressionMethod);
         if (compression === null) { // no compression found
-            throw new Error("Corrupted zip : compression " + utils.pretty(this.compressionMethod) + " unknown (inner file : " + utils.transformTo("string", this.fileName) + ")");
+            throw new Error("Corrupted zip : compression " + utils.pretty(this.compressionMethod) + " unknown (inner file : " +  utils.transformTo("string", this.fileName) + ")");
         }
-        this.decompressed = new CompressedObject(this.compressedSize, this.uncompressedSize, this.crc32, compression, reader.readData(this.compressedSize));
+        this.decompressed = new CompressedObject();
+        this.decompressed.compressedSize = this.compressedSize;
+        this.decompressed.uncompressedSize = this.uncompressedSize;
+        this.decompressed.crc32 = this.crc32;
+        this.decompressed.compressionMethod = this.compressionMethod;
+        this.decompressed.getCompressedContent = this.prepareCompressedContent(reader, reader.index, this.compressedSize, compression);
+        this.decompressed.getContent = this.prepareContent(reader, reader.index, this.compressedSize, compression, this.uncompressedSize);
+
+        // we need to compute the crc32...
+        if (this.loadOptions.checkCRC32) {
+            this.decompressed = utils.transformTo("string", this.decompressed.getContent());
+            if (jszipProto.crc32(this.decompressed) !== this.crc32) {
+                throw new Error("Corrupted zip : CRC32 mismatch");
+            }
+        }
     },
 
     /**
@@ -102,15 +135,14 @@ ZipEntry.prototype = {
      */
     readCentralPart: function(reader) {
         this.versionMadeBy = reader.readInt(2);
-        reader.skip(2);
-        // this.versionNeeded = reader.readInt(2);
+        this.versionNeeded = reader.readInt(2);
         this.bitFlag = reader.readInt(2);
         this.compressionMethod = reader.readString(2);
         this.date = reader.readDate();
         this.crc32 = reader.readInt(4);
         this.compressedSize = reader.readInt(4);
         this.uncompressedSize = reader.readInt(4);
-        var fileNameLength = reader.readInt(2);
+        this.fileNameLength = reader.readInt(2);
         this.extraFieldsLength = reader.readInt(2);
         this.fileCommentLength = reader.readInt(2);
         this.diskNumberStart = reader.readInt(2);
@@ -122,8 +154,7 @@ ZipEntry.prototype = {
             throw new Error("Encrypted zip are not supported");
         }
 
-        // will be read in the local part, see the comments there
-        reader.skip(fileNameLength);
+        this.fileName = reader.readData(this.fileNameLength);
         this.readExtraFields(reader);
         this.parseZIP64ExtraField(reader);
         this.fileComment = reader.readData(this.fileCommentLength);
@@ -169,7 +200,7 @@ ZipEntry.prototype = {
         }
 
         // should be something, preparing the extra reader
-        var extraReader = readerFor(this.extraFields[0x0001].value);
+        var extraReader = new StringReader(this.extraFields[0x0001].value);
 
         // I really hope that these 64bits integer can fit in 32 bits integer, because js
         // won't let us have more.
@@ -191,19 +222,17 @@ ZipEntry.prototype = {
      * @param {DataReader} reader the reader to use.
      */
     readExtraFields: function(reader) {
-        var end = reader.index + this.extraFieldsLength,
+        var start = reader.index,
             extraFieldId,
             extraFieldLength,
             extraFieldValue;
 
-        if (!this.extraFields) {
-            this.extraFields = {};
-        }
+        this.extraFields = this.extraFields || {};
 
-        while (reader.index < end) {
+        while (reader.index < start + this.extraFieldsLength) {
             extraFieldId = reader.readInt(2);
             extraFieldLength = reader.readInt(2);
-            extraFieldValue = reader.readData(extraFieldLength);
+            extraFieldValue = reader.readString(extraFieldLength);
 
             this.extraFields[extraFieldId] = {
                 id: extraFieldId,
@@ -218,14 +247,13 @@ ZipEntry.prototype = {
     handleUTF8: function() {
         var decodeParamType = support.uint8array ? "uint8array" : "array";
         if (this.useUTF8()) {
-            this.fileNameStr = utf8.utf8decode(this.fileName);
-            this.fileCommentStr = utf8.utf8decode(this.fileComment);
+            this.fileNameStr = jszipProto.utf8decode(this.fileName);
+            this.fileCommentStr = jszipProto.utf8decode(this.fileComment);
         } else {
             var upath = this.findExtraFieldUnicodePath();
             if (upath !== null) {
                 this.fileNameStr = upath;
             } else {
-                // ASCII text or unsupported code page
                 var fileNameByteArray =  utils.transformTo(decodeParamType, this.fileName);
                 this.fileNameStr = this.loadOptions.decodeFileName(fileNameByteArray);
             }
@@ -234,7 +262,6 @@ ZipEntry.prototype = {
             if (ucomment !== null) {
                 this.fileCommentStr = ucomment;
             } else {
-                // ASCII text or unsupported code page
                 var commentByteArray =  utils.transformTo(decodeParamType, this.fileComment);
                 this.fileCommentStr = this.loadOptions.decodeFileName(commentByteArray);
             }
@@ -248,7 +275,7 @@ ZipEntry.prototype = {
     findExtraFieldUnicodePath: function() {
         var upathField = this.extraFields[0x7075];
         if (upathField) {
-            var extraReader = readerFor(upathField.value);
+            var extraReader = new StringReader(upathField.value);
 
             // wrong version
             if (extraReader.readInt(1) !== 1) {
@@ -256,11 +283,11 @@ ZipEntry.prototype = {
             }
 
             // the crc of the filename changed, this field is out of date.
-            if (crc32fn(this.fileName) !== extraReader.readInt(4)) {
+            if (jszipProto.crc32(this.fileName) !== extraReader.readInt(4)) {
                 return null;
             }
 
-            return utf8.utf8decode(extraReader.readData(upathField.length - 5));
+            return jszipProto.utf8decode(extraReader.readString(upathField.length - 5));
         }
         return null;
     },
@@ -272,7 +299,7 @@ ZipEntry.prototype = {
     findExtraFieldUnicodeComment: function() {
         var ucommentField = this.extraFields[0x6375];
         if (ucommentField) {
-            var extraReader = readerFor(ucommentField.value);
+            var extraReader = new StringReader(ucommentField.value);
 
             // wrong version
             if (extraReader.readInt(1) !== 1) {
@@ -280,11 +307,11 @@ ZipEntry.prototype = {
             }
 
             // the crc of the comment changed, this field is out of date.
-            if (crc32fn(this.fileComment) !== extraReader.readInt(4)) {
+            if (jszipProto.crc32(this.fileComment) !== extraReader.readInt(4)) {
                 return null;
             }
 
-            return utf8.utf8decode(extraReader.readData(ucommentField.length - 5));
+            return jszipProto.utf8decode(extraReader.readString(ucommentField.length - 5));
         }
         return null;
     }

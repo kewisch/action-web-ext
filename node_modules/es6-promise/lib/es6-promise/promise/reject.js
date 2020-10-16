@@ -8,7 +8,7 @@ import {
   It is shorthand for the following:
 
   ```javascript
-  let promise = new Promise(function(resolve, reject){
+  var promise = new Promise(function(resolve, reject){
     reject(new Error('WHOOPS'));
   });
 
@@ -22,7 +22,7 @@ import {
   Instead of writing the above, your code now simply becomes the following:
 
   ```javascript
-  let promise = Promise.reject(new Error('WHOOPS'));
+  var promise = Promise.reject(new Error('WHOOPS'));
 
   promise.then(function(value){
     // Code here doesn't run because the promise is rejected!
@@ -39,8 +39,8 @@ import {
 */
 export default function reject(reason) {
   /*jshint validthis:true */
-  let Constructor = this;
-  let promise = new Constructor(noop);
+  var Constructor = this;
+  var promise = new Constructor(noop);
   _reject(promise, reason);
   return promise;
 }

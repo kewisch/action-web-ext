@@ -15,9 +15,6 @@
             "edge": {
               "version_added": false
             },
-            "edge_mobile": {
-              "version_added": false
-            },
             "firefox": [
               {
                 "version_added": "49"
@@ -61,7 +58,7 @@
             }
           },
           "status": {
-            "experimental": true,
+            "experimental": false,
             "standard_track": true,
             "deprecated": false
           }

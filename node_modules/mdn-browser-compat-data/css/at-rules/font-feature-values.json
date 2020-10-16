@@ -15,9 +15,6 @@
             "edge": {
               "version_added": false
             },
-            "edge_mobile": {
-              "version_added": false
-            },
             "firefox": [
               {
                 "version_added": "34"
@@ -71,7 +68,7 @@
             }
           },
           "status": {
-            "experimental": true,
+            "experimental": false,
             "standard_track": true,
             "deprecated": false
           }
@@ -88,9 +85,6 @@
                 "version_added": false
               },
               "edge": {
-                "version_added": false
-              },
-              "edge_mobile": {
                 "version_added": false
               },
               "firefox": [
@@ -146,7 +140,7 @@
               }
             },
             "status": {
-              "experimental": true,
+              "experimental": false,
               "standard_track": true,
               "deprecated": false
             }
@@ -166,9 +160,6 @@
               "edge": {
                 "version_added": false
               },
-              "edge_mobile": {
-                "version_added": false
-              },
               "firefox": [
                 {
                   "version_added": "34"
@@ -222,7 +213,7 @@
               }
             },
             "status": {
-              "experimental": true,
+              "experimental": false,
               "standard_track": true,
               "deprecated": false
             }
@@ -241,9 +232,6 @@
               "edge": {
                 "version_added": false
               },
-              "edge_mobile": {
-                "version_added": false
-              },
               "firefox": [
                 {
                   "version_added": "34"
@@ -297,7 +285,7 @@
               }
             },
             "status": {
-              "experimental": true,
+              "experimental": false,
               "standard_track": true,
               "deprecated": false
             }
@@ -317,9 +305,6 @@
               "edge": {
                 "version_added": false
               },
-              "edge_mobile": {
-                "version_added": false
-              },
               "firefox": [
                 {
                   "version_added": "34"
@@ -373,7 +358,7 @@
               }
             },
             "status": {
-              "experimental": true,
+              "experimental": false,
               "standard_track": true,
               "deprecated": false
             }
@@ -393,9 +378,6 @@
               "edge": {
                 "version_added": false
               },
-              "edge_mobile": {
-                "version_added": false
-              },
               "firefox": [
                 {
                   "version_added": "34"
@@ -449,7 +431,7 @@
               }
             },
             "status": {
-              "experimental": true,
+              "experimental": false,
               "standard_track": true,
               "deprecated": false
             }
@@ -469,9 +451,6 @@
               "edge": {
                 "version_added": false
               },
-              "edge_mobile": {
-                "version_added": false
-              },
               "firefox": [
                 {
                   "version_added": "34"
@@ -525,7 +504,7 @@
               }
             },
             "status": {
-              "experimental": true,
+              "experimental": false,
               "standard_track": true,
               "deprecated": false
             }
@@ -545,9 +524,6 @@
               "edge": {
                 "version_added": false
               },
-              "edge_mobile": {
-                "version_added": false
-              },
               "firefox": [
                 {
                   "version_added": "34"
@@ -601,7 +577,7 @@
               }
             },
             "status": {
-              "experimental": true,
+              "experimental": false,
               "standard_track": true,
               "deprecated": false
             }
