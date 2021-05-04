@@ -131,7 +131,11 @@ export default class WebExtAction {
       try {
         id = manifest.applications.gecko.id;
       } catch (err) {
-        throw new Error("Must specify an add-on id in the manifest at browser_specific_settings.gecko.id");
+        try {
+          id = this.options.geckoId;
+        } catch (error) {
+          throw new Error("Must specify an add-on id in the manifest at browser_specific_settings.gecko.id or geckoId in action yaml");
+        }
       }
     }
 

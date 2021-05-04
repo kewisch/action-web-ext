@@ -29,6 +29,7 @@ async function main() {
     apiKey: mask(core.getInput("apiKey")),
     apiSecret: mask(core.getInput("apiSecret")),
     apiUrlPrefix: core.getInput("apiUrlPrefix"),
+    geckoId: core.getInput("geckoId"),
     timeout: core.getInput("timeout"),
   });
 
