@@ -40,6 +40,9 @@ inputs:
       from Mozilla's web service. Defaults to 900000 ms (15 minutes).
     required: false
     default: 900000
+  filename:
+    description: "Filename template for the packed extension in the artifacts"
+    required: false
 runs:
   using: "node12"
   main: "src/loader.js"

@@ -22,6 +22,9 @@ async function main() {
     channel: core.getInput("channel"),
     verbose: core.getInput("verbose") == "true",
 
+    // Build options
+    extensionFilenameTemplate: core.getInput("filename"),
+
     // Linting options
     token: process.env.GITHUB_TOKEN,
 
