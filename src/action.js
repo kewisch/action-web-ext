@@ -111,6 +111,8 @@ export default class WebExtAction {
     let results = await webExt.cmd.build({
       sourceDir: this.options.sourceDir,
       artifactsDir: this.options.artifactsDir,
+      filename: this.options.extensionFilenameTemplate ?
+        this.options.extensionFilenameTemplate : undefined,
       overwriteDest: true,
       ignoreFiles: [".git", ".github", "web-ext-artifacts"],
     }, {

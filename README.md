@@ -53,6 +53,9 @@ build
 
 A simple web-ext build. Folders `.git`, `.github` and `web-ext-artifacts` are automatically ignored. You can use the `target` output for subsequent steps.
 
+You can use the following extra options:
+* `filename`: Template string for the packed extension's filename, available for download through the job's artifacts. The placeholders in braces (`{...}`) are replaced by the corresponding entries in the extension's `manifest.json`. E.g. `"{name}-{version}.xpi"`.
+
 ```yaml
 name: "Build"
 on:
@@ -75,6 +78,7 @@ jobs:
         with:
           cmd: build
           source: src
+          filename: "{name}-{version}.xpi"
 
       - name: "Upload Artifact"
         uses: actions/upload-artifact@master
