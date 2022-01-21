@@ -74,41 +74,41 @@ function normalizeBinary (binaryPath, platform, arch) {
     // Windows binary finding
     var appName = normalizeBinary.appNames[app + " on windows"];
 
-    // this is used when reading the registry goes wrong.
-    function fallBack () {
+    resolve(getPathToExe(Winreg.HKCU, appName).catch(function() {
+      return getPathToExe(Winreg.HKLM, appName);
+    }).catch(function() {
+      // Neither registry hive has the correct keys
       var programFilesVar = "ProgramFiles";
       if (arch === "(64)") {
         console.warn("You are using 32-bit version of Firefox on 64-bit versions of the Windows.\nSome features may not work correctly in this version. You should upgrade Firefox to the latest 64-bit version now!")
         programFilesVar = "ProgramFiles(x86)";
       }
-      resolve(path.join(process.env[programFilesVar], appName, "firefox.exe"));
-    }
+      return path.join(process.env[programFilesVar], appName, "firefox.exe");
+    }));
+  });
+}
 
-    var rootKey = "\\Software\\Mozilla\\";
-    rootKey = path.join(rootKey, appName);
+// Returns a promise to get Firefox's PathToExe from a registry hive
+function getPathToExe(hive, appName) {
+  const rootKey = path.join("\\Software\\Mozilla\\", appName);
 
-    return when.promise(function(resolve, reject) {
-      var versionKey = new Winreg({
-        hive: Winreg.HKLM,
-        key: rootKey
-      });
-      versionKey.get("CurrentVersion", function(err, key) {
-        var isOk = key && !err;
-        return isOk ? resolve(key.value) : reject();
-      });
-    }).then(function(version) {
-      var mainKey = new Winreg({
-        hive: Winreg.HKLM,
-        key: path.join(rootKey, version, "Main")
-      });
-      mainKey.get("PathToExe", function(err, key) {
-        if (err) {
-          fallBack();
-          return;
-        }
-        resolve(key.value);
-      });
-    }, fallBack);
+  return getRegistryValue(hive, rootKey, "CurrentVersion").then(function(version) {
+    return getRegistryValue(hive, path.join(rootKey, version, "Main"), "PathToExe");
+  });
+}
+
+// Returns a promise to get a single registry value
+function getRegistryValue(hive, key, name) {
+  return when.promise(function(resolve, reject) {
+    const registry = new Winreg({ hive, key });
+
+    registry.get(name, function(error, resultKey) {
+      if (resultKey && !error) {
+        resolve(resultKey.value);
+      } else {
+        reject(error);
+      }
+    });
   });
 }
 

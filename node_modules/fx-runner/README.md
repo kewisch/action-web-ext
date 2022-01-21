@@ -1,10 +1,7 @@
 # Firefox Runner
 
-[![Build Status](https://img.shields.io/travis/mozilla-jetpack/node-fx-runner.svg?style=flat-square)](https://travis-ci.org/mozilla-jetpack/node-fx-runner)
-[![Build Status](https://img.shields.io/npm/v/fx-runner.svg?style=flat-square)](https://www.npmjs.org/package/fx-runner)
-
-[![NPM](https://nodei.co/npm/fx-runner.png?stars&downloads)](https://nodei.co/npm/fx-runner/)
-[![NPM](https://nodei.co/npm-dl/fx-runner.png)](https://nodei.co/npm/fx-runner)
+[![CircleCI](https://circleci.com/gh/mozilla/node-fx-runner.svg?style=svg)](https://circleci.com/gh/mozilla/node-fx-runner)
+[![npm version](https://badge.fury.io/js/fx-runner.svg)](https://badge.fury.io/js/fx-runner)
 
 ## API
 
