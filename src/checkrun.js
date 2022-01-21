@@ -7,12 +7,12 @@ import * as github from "@actions/github";
 
 export default class CheckRun {
   constructor(name, context, token) {
+    this.id = null;
     this.name = name;
     this.context = context;
+    this.octokit = github.getOctokit(token || "dummy");
 
-    this.id = null;
-    this.octokit = github.getOctokit(token);
-    this.ready = (token != null);
+    this.ready = !!token;
   }
 
   async create() {
