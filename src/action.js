@@ -24,8 +24,8 @@ async function getManifest(xpi) {
     let zipFile = await yauzl.open(xpi);
     let manifest;
 
-    for await (let entry of zipFile) {
-      if (entry.fileName == "manifest.json") {
+    for (let entry = await zipFile.readEntry(); entry; entry = await zipFile.readEntry()) {
+      if (entry && entry.fileName == "manifest.json") {
         let readStream = await entry.openReadStream();
         manifest = JSON.parse(await getStream(readStream));
         break;
