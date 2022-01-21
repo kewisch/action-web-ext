@@ -41,5 +41,5 @@ inputs:
     required: false
     default: 900000
 runs:
-  using: "node12"
-  main: "src/loader.js"
+  using: "node16"
+  main: "src/index.js"
