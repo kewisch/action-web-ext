@@ -14,7 +14,7 @@ import getStream from "get-stream";
 import * as github from "@actions/github";
 import * as core from "@actions/core";
 
-import CheckRun from "./checkrun";
+import CheckRun from "./checkrun.js";
 
 async function getManifest(xpi) {
   let stat = await fs.promises.lstat(xpi);
@@ -163,17 +163,20 @@ export default class WebExtAction {
       }
     }
 
-    if (this.options.channel == "listed") {
-      // It might have worked, we won't know until https://github.com/mozilla/sign-addon/pull/314
-      return { addon_id: id, target: null };
-    } else if (result.success) {
+    if (result.success) {
       console.log("Downloaded these files: " + result.downloadedFiles);
       return {
         addon_id: result.id,
         target: result.downloadedFiles[0]
       };
+    } else if (result.errorCode == "ADDON_NOT_AUTO_SIGNED") {
+      console.log("The add-on passed validation, but was not auto-signed (listed, or held for manual review)");
+      return {
+        addon_id: result.id,
+        target: null
+      };
     } else {
-      throw new Error("The signing process has failed");
+      throw new Error(`The signing process has failed (${result.errorCode}): ${result.errorDetails}`);
     }
   }
 }

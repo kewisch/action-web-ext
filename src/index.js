@@ -5,7 +5,7 @@
 
 import * as core from "@actions/core";
 
-import WebExtAction from "./action";
+import WebExtAction from "./action.js";
 
 function mask(value) {
   if (value) {
