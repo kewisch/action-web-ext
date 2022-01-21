@@ -20,7 +20,7 @@ export default class CheckRun {
       return;
     }
 
-    let res = await this.octokit.checks.create({
+    let res = await this.octokit.rest.checks.create({
       ...this.context.repo,
       head_sha: this.context.sha,
       name: "Test: " + this.name,
@@ -36,7 +36,7 @@ export default class CheckRun {
       return;
     }
 
-    await this.octokit.checks.update({
+    await this.octokit.rest.checks.update({
       ...this.context.repo,
       head_sha: this.context.sha,
       check_run_id: this.id,
