@@ -86,12 +86,7 @@ jobs:
 sign
 ----
 
-Send the add-on for signature to AMO. To reduce the load on AMO servers, please don't use this for on-commit or nightly builds. If you want to test your add-on you can do so in `about:debugging`. Using this for betas or releases is great though, especially in combination with [softprops/action-gh-release](https://github.com/softprops/action-gh-release).
-
-Under the hood, the action uses [mozilla/sign-addon](https://github.com/mozilla/sign-addon)
-directly. Please note that when using the `listed` channel this action will always succeed. Things
-will get better after https://github.com/mozilla/sign-addon/pull/314, but for `listed` it will not be
-possible to immediately get the signed add-on.
+Send the add-on for signature to AMO. To reduce the load on AMO servers, please don't use this for on-commit or nightly builds. If you want to test your add-on you can do so in `about:debugging`. Using this for betas or releases is great though, especially in combination with [softprops/action-gh-release](https://github.com/softprops/action-gh-release). Under the hood, the action uses [mozilla/sign-addon](https://github.com/mozilla/sign-addon). Please note that listed add-ons will not be signed immediately, this is indicated during the build process but is not counted as a failure.
 
 You can use the following extra options:
 * `apiKey`: The API key used for signing
