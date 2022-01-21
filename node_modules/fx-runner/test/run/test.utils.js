@@ -35,14 +35,70 @@ describe("lib/utils", function () {
       return;
     }
 
-    // see ./mock-winreg.js
     var expected = "fake\\binary\\path";
-    var binary = sandbox.require("../../lib/utils", {
-      requires: {"winreg": function() {
-        this.get = function(_, fn) {
+
+    // see ./mock-winreg.js
+    // Only mock keys in HKLM (local machine) hive.
+    // This test case checks the basic functionality if the user does not have a newer version of
+    // Firefox installed meaning the HKCU keys are not present.
+    var winreg = function(options) {
+      this.get = function(_, fn) {
+        if (options.hive === winreg.HKLM) {
           fn(null, {value: expected});
-        };
-      }}
+        } else {
+          fn("Failed", null);
+        }
+      };
+    };
+    winreg.HKLM = "HKLM";
+
+    var binary = sandbox.require("../../lib/utils", {
+      requires: { winreg }
+    }).normalizeBinary;
+
+    var promises = [
+      [null, "windows", "x86"],
+      [null, "windows", "x86_64"]
+    ].map(function(args) {
+      var promise = binary.apply(binary, args);
+      return promise.then(function(actual) {
+        expect(actual).to.be.equal(expected);
+      });
+    });
+    all(promises).then(done.bind(null, null), done);
+  });
+
+  it("normalizeBinary() prefers HKCU registry hive over HKLM on Windows", function(done) {
+    // Skip this test for now, to get Travis running.
+    if (!/win/i.test(os.platform)) {
+      done();
+      return;
+    }
+
+    // Provide different paths depending on hive.
+    // This test case checks that in order to find recent versions of Firefox, HKCU is tried
+    // before falling back on HKCU as in the test above.
+    var expected = "fake\\binary\\path";
+    var oldPath = "fake\\old\\binary\\path";
+
+    // see ./mock-winreg.js
+    var winreg = function(options) {
+      this.get = function(_, fn) {
+        if (options.hive === winreg.HKCU) {
+          fn(null, {value: expected});
+        } else if (options.hive === winreg.HKLM) {
+          fn(null, {value: oldPath});
+        } else {
+          fn("Failed", null);
+        }
+      };
+    };
+    // Differentiate hives
+    winreg.HKLM = "HKLM";
+    winreg.HKCU = "HKCU";
+
+    var binary = sandbox.require("../../lib/utils", {
+      requires: { winreg }
     }).normalizeBinary;
 
     var promises = [

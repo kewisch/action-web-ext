@@ -40,7 +40,6 @@ module.exports = {
 
         docs: {
             description: "disallow `this`/`super` before calling `super()` in constructors",
-            category: "ECMAScript 6",
             recommended: true,
             url: "https://eslint.org/docs/rules/no-this-before-super"
         },
@@ -171,7 +170,7 @@ module.exports = {
             /**
              * Removes the top of stack item.
              *
-             * And this treverses all segments of this code path then reports every
+             * And this traverses all segments of this code path then reports every
              * invalid node.
              * @param {CodePath} codePath A code path which was ended.
              * @returns {void}

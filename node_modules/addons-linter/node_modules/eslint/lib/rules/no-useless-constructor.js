@@ -138,7 +138,6 @@ module.exports = {
 
         docs: {
             description: "disallow unnecessary constructors",
-            category: "ECMAScript 6",
             recommended: false,
             url: "https://eslint.org/docs/rules/no-useless-constructor"
         },
@@ -159,6 +158,14 @@ module.exports = {
          */
         function checkForConstructor(node) {
             if (node.kind !== "constructor") {
+                return;
+            }
+
+            /*
+             * Prevent crashing on parsers which do not require class constructor
+             * to have a body, e.g. typescript and flow
+             */
+            if (!node.value.body) {
                 return;
             }
 

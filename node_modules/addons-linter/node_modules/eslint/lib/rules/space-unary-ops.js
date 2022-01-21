@@ -1,5 +1,5 @@
 /**
- * @fileoverview This rule shoud require or disallow spaces before or after unary operations.
+ * @fileoverview This rule should require or disallow spaces before or after unary operations.
  * @author Marcin Kumorek
  */
 "use strict";
@@ -20,7 +20,6 @@ module.exports = {
 
         docs: {
             description: "enforce consistent spacing before or after unary operators",
-            category: "Stylistic Issues",
             recommended: false,
             url: "https://eslint.org/docs/rules/space-unary-ops"
         },

@@ -80,7 +80,6 @@ module.exports = {
 
         docs: {
             description: "enforce the consistent use of either backticks, double, or single quotes",
-            category: "Stylistic Issues",
             recommended: false,
             url: "https://eslint.org/docs/rules/quotes"
         },
@@ -216,6 +215,7 @@ module.exports = {
 
                 // LiteralPropertyName.
                 case "Property":
+                case "PropertyDefinition":
                 case "MethodDefinition":
                     return parent.key === node && !parent.computed;
 
@@ -282,9 +282,12 @@ module.exports = {
                                 description: settings.description
                             },
                             fix(fixer) {
-                                if (quoteOption === "backtick" && astUtils.hasOctalEscapeSequence(rawVal)) {
+                                if (quoteOption === "backtick" && astUtils.hasOctalOrNonOctalDecimalEscapeSequence(rawVal)) {
 
-                                    // An octal escape sequence in a template literal would produce syntax error, even in non-strict mode.
+                                    /*
+                                     * An octal or non-octal decimal escape sequence in a template literal would
+                                     * produce syntax error, even in non-strict mode.
+                                     */
                                     return null;
                                 }
 
