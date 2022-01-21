@@ -7,7 +7,7 @@ import path from "path";
 import fs from "fs";
 
 import webExt from "web-ext";
-import { signAddon } from "sign-addon";
+import signAddonPkg from "sign-addon";
 import yauzl from "yauzl-promise";
 import getStream from "get-stream";
 
@@ -15,6 +15,8 @@ import * as github from "@actions/github";
 import * as core from "@actions/core";
 
 import CheckRun from "./checkrun.js";
+
+const { signAddon } = signAddonPkg;
 
 async function getManifest(xpi) {
   let stat = await fs.promises.lstat(xpi);
