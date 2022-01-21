@@ -14,7 +14,7 @@ jobs:
         uses: actions/checkout@v1
 
       - name: "Run ESLint"
-        uses: gimenete/eslint-action@1.0
+        uses: kewisch/action-yet-another-eslint@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   test:
