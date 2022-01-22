@@ -172,7 +172,7 @@ export default class WebExtAction {
         target: result.downloadedFiles[0]
       };
     } else if (result.errorCode == "ADDON_NOT_AUTO_SIGNED") {
-      console.log("The add-on passed validation, but was not auto-signed (listed, or held for manual review)");
+      core.warning("The add-on passed validation, but was not auto-signed (listed, or held for manual review)");
       return {
         addon_id: result.id,
         target: null
