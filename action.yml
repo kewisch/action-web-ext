@@ -33,7 +33,7 @@ inputs:
   apiUrlPrefix:
     description: "[sign] The URL of the signing API, defaults to AMO production"
     required: false
-    default: "https://addons.mozilla.org/api/v3"
+    default: "https://addons.mozilla.org/api/v4"
   timeout:
     description: |
       [sign] The number of milliseconds to wait before giving up on a response
