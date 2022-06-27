@@ -14,14 +14,14 @@ Generally you can use these inputs:
 * `verbose`: Output more debugging if set to true
 * `progressBar`: Enable the console progress bar
 * `channel`: The channel to use, `listed` or `unlisted`
+* `ignoreFiles`: A json string containing an array of files to be ignored. Web-ext by default already ignores the most frequently ignored files.
 
 There are a few more specific to each command.
 
 lint
 ----
 
-Linting supports annotations, this is great for pull requests. Folders `.git`, `.github` and
-`web-ext-artifacts` are automatically ignored. A token is not required for this action, though if
+Linting supports annotations, this is great for pull requests. A token is not required for this action, though if
 `GITHUB_TOKEN` is in the environment, it will be used to create a check run.
 
 ```yaml
@@ -51,7 +51,7 @@ jobs:
 build
 -----
 
-A simple web-ext build. Folders `.git`, `.github` and `web-ext-artifacts` are automatically ignored.
+A simple web-ext build.
 You can use the `target` output for subsequent steps.
 
 You can use the following extra options:
@@ -80,6 +80,7 @@ jobs:
           cmd: build
           source: src
           filename: "{name}-{version}.xpi"
+          ignoreFiles: '[ "package.json","package-lock.json","yarn.lock" ]'
 
       - name: "Upload Artifact"
         uses: actions/upload-artifact@master

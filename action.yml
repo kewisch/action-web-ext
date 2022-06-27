@@ -24,6 +24,10 @@ inputs:
     description: "Show the progress bar in command output"
     required: false
     default: false
+  ignoreFiles:
+    description: "JSON array with files to ignore"
+    required: false
+    default: "[]"
   channel:
     description: "[lint+sign] The target channel"
     required: false
