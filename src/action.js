@@ -108,6 +108,9 @@ export default class WebExtAction {
   }
 
   async cmd_build() {
+    if (this.options.verbose) {
+      webExt.util.logger.consoleStream.makeVerbose();
+    }
     let results = await webExt.cmd.build({
       sourceDir: this.options.sourceDir,
       artifactsDir: this.options.artifactsDir,
