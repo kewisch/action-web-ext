@@ -21,6 +21,7 @@ async function main() {
     artifactsDir: core.getInput("artifacts"),
     channel: core.getInput("channel"),
     verbose: core.getInput("verbose") == "true",
+    ignoreFiles: core.getInput("ignoreFiles"),
 
     // Build options
     extensionFilenameTemplate: core.getInput("filename"),
