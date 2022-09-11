@@ -1,16 +1,11 @@
-'use strict';
-const stringWidth = require('string-width');
+import stringWidth from 'string-width';
 
-const widestLine = input => {
-	let max = 0;
+export default function widestLine(string) {
+	let lineWidth = 0;
 
-	for (const line of input.split('\n')) {
-		max = Math.max(max, stringWidth(line));
+	for (const line of string.split('\n')) {
+		lineWidth = Math.max(lineWidth, stringWidth(line));
 	}
 
-	return max;
-};
-
-module.exports = widestLine;
-// TODO: remove this in the next major version
-module.exports.default = widestLine;
+	return lineWidth;
+}

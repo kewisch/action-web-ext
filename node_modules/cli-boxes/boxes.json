@@ -1,58 +1,82 @@
 {
 	"single": {
 		"topLeft": "┌",
+		"top": "─",
 		"topRight": "┐",
+		"right": "│",
 		"bottomRight": "┘",
+		"bottom": "─",
 		"bottomLeft": "└",
-		"vertical": "│",
-		"horizontal": "─"
+		"left": "│"
 	},
 	"double": {
 		"topLeft": "╔",
+		"top": "═",
 		"topRight": "╗",
+		"right": "║",
 		"bottomRight": "╝",
+		"bottom": "═",
 		"bottomLeft": "╚",
-		"vertical": "║",
-		"horizontal": "═"
+		"left": "║"
 	},
 	"round": {
 		"topLeft": "╭",
+		"top": "─",
 		"topRight": "╮",
+		"right": "│",
 		"bottomRight": "╯",
+		"bottom": "─",
 		"bottomLeft": "╰",
-		"vertical": "│",
-		"horizontal": "─"
+		"left": "│"
 	},
 	"bold": {
 		"topLeft": "┏",
+		"top": "━",
 		"topRight": "┓",
+		"right": "┃",
 		"bottomRight": "┛",
+		"bottom": "━",
 		"bottomLeft": "┗",
-		"vertical": "┃",
-		"horizontal": "━"
+		"left": "┃"
 	},
 	"singleDouble": {
 		"topLeft": "╓",
+		"top": "─",
 		"topRight": "╖",
+		"right": "║",
 		"bottomRight": "╜",
+		"bottom": "─",
 		"bottomLeft": "╙",
-		"vertical": "║",
-		"horizontal": "─"
+		"left": "║"
 	},
 	"doubleSingle": {
 		"topLeft": "╒",
+		"top": "═",
 		"topRight": "╕",
+		"right": "│",
 		"bottomRight": "╛",
+		"bottom": "═",
 		"bottomLeft": "╘",
-		"vertical": "│",
-		"horizontal": "═"
+		"left": "│"
 	},
 	"classic": {
 		"topLeft": "+",
+		"top": "-",
 		"topRight": "+",
+		"right": "|",
 		"bottomRight": "+",
+		"bottom": "-",
 		"bottomLeft": "+",
-		"vertical": "|",
-		"horizontal": "-"
+		"left": "|"
+	},
+	"arrow": {
+		"topLeft": "↘",
+		"top": "↓",
+		"topRight": "↙",
+		"right": "←",
+		"bottomRight": "↖",
+		"bottom": "↑",
+		"bottomLeft": "↗",
+		"left": "→"
 	}
 }

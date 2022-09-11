@@ -52,9 +52,7 @@ function _mask(source, mask, output, offset, length) {
  * @public
  */
 function _unmask(buffer, mask) {
-  // Required until https://github.com/nodejs/node/issues/9006 is resolved.
-  const length = buffer.length;
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < buffer.length; i++) {
     buffer[i] ^= mask[i & 3];
   }
 }
@@ -101,29 +99,29 @@ function toBuffer(data) {
   return buf;
 }
 
-try {
-  const bufferUtil = require('bufferutil');
-  const bu = bufferUtil.BufferUtil || bufferUtil;
+module.exports = {
+  concat,
+  mask: _mask,
+  toArrayBuffer,
+  toBuffer,
+  unmask: _unmask
+};
 
-  module.exports = {
-    concat,
-    mask(source, mask, output, offset, length) {
+/* istanbul ignore else  */
+if (!process.env.WS_NO_BUFFER_UTIL) {
+  try {
+    const bufferUtil = require('bufferutil');
+
+    module.exports.mask = function (source, mask, output, offset, length) {
       if (length < 48) _mask(source, mask, output, offset, length);
-      else bu.mask(source, mask, output, offset, length);
-    },
-    toArrayBuffer,
-    toBuffer,
-    unmask(buffer, mask) {
+      else bufferUtil.mask(source, mask, output, offset, length);
+    };
+
+    module.exports.unmask = function (buffer, mask) {
       if (buffer.length < 32) _unmask(buffer, mask);
-      else bu.unmask(buffer, mask);
-    }
-  };
-} catch (e) /* istanbul ignore next */ {
-  module.exports = {
-    concat,
-    mask: _mask,
-    toArrayBuffer,
-    toBuffer,
-    unmask: _unmask
-  };
+      else bufferUtil.unmask(buffer, mask);
+    };
+  } catch (e) {
+    // Continue regardless of the error.
+  }
 }

@@ -4,11 +4,13 @@ declare namespace cliBoxes {
 	*/
 	interface BoxStyle {
 		readonly topLeft: string;
+		readonly top: string;
 		readonly topRight: string;
-		readonly bottomLeft: string;
+		readonly right: string;
 		readonly bottomRight: string;
-		readonly horizontal: string;
-		readonly vertical: string;
+		readonly bottom: string;
+		readonly bottomLeft: string;
+		readonly left: string;
 	}
 
 	/**
@@ -84,6 +86,16 @@ declare namespace cliBoxes {
 		```
 		*/
 		readonly classic: BoxStyle;
+
+		/**
+		@example
+		```
+		↘↓↓↓↓↙
+		→    ←
+		↗↑↑↑↑↖
+		```
+		*/
+		readonly arrow: BoxStyle;
 	}
 }
 
@@ -97,11 +109,13 @@ import cliBoxes = require('cli-boxes');
 console.log(cliBoxes.single);
 // {
 // 	topLeft: '┌',
+// 	top: '─',
 // 	topRight: '┐',
+// 	right: '│',
 // 	bottomRight: '┘',
+// 	bottom: '─',
 // 	bottomLeft: '└',
-// 	vertical: '│',
-// 	horizontal: '─'
+// 	left: '│'
 // }
 ```
 */

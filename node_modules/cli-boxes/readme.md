@@ -1,4 +1,4 @@
-# cli-boxes [![Build Status](https://travis-ci.com/sindresorhus/cli-boxes.svg?branch=master)](https://travis-ci.com/github/sindresorhus/cli-boxes)
+# cli-boxes
 
 > Boxes for use in the terminal
 
@@ -18,12 +18,14 @@ const cliBoxes = require('cli-boxes');
 console.log(cliBoxes.single);
 /*
 {
-    topLeft: '┌',
-    topRight: '┐',
-    bottomRight: '┘',
-    bottomLeft: '└',
-    vertical: '│',
-    horizontal: '─'
+	topLeft: '┌',
+	top: '─',
+	topRight: '┐',
+	right: '│',
+	bottomRight: '┘',
+	bottom: '─',
+	bottomLeft: '└',
+	left: '│'
 }
 */
 ```
@@ -86,6 +88,14 @@ console.log(cliBoxes.single);
 +----+
 |    |
 +----+
+```
+
+#### `arrow`
+
+```
+↘↓↓↓↓↙
+→    ←
+↗↑↑↑↑↖
 ```
 
 ## Related

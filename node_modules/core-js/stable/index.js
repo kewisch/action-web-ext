@@ -224,6 +224,8 @@ require('../modules/es.typed-array.to-string');
 require('../modules/es.unescape');
 require('../modules/es.weak-map');
 require('../modules/es.weak-set');
+require('../modules/web.atob');
+require('../modules/web.btoa');
 require('../modules/web.dom-collections.for-each');
 require('../modules/web.dom-collections.iterator');
 require('../modules/web.dom-exception.constructor');
