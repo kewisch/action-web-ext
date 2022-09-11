@@ -7,7 +7,9 @@ import path from "path";
 import fs from "fs";
 
 import webExt from "web-ext";
-import signAddonPkg from "sign-addon";
+import { consoleStream } from "web-ext/util/logger";
+
+import { signAddon } from "sign-addon";
 import yauzl from "yauzl-promise";
 import getStream from "get-stream";
 
@@ -15,8 +17,6 @@ import * as github from "@actions/github";
 import * as core from "@actions/core";
 
 import CheckRun from "./checkrun.js";
-
-const { signAddon } = signAddonPkg;
 
 async function getManifest(xpi) {
   let stat = await fs.promises.lstat(xpi);
@@ -47,6 +47,10 @@ async function getManifest(xpi) {
 export default class WebExtAction {
   constructor(options) {
     this.options = options;
+
+    if (this.options.verbose) {
+      consoleStream.makeVerbose();
+    }
   }
 
   async run(cmd, ...args) {
@@ -153,7 +157,8 @@ export default class WebExtAction {
         apiSecret: this.options.apiSecret,
         apiUrlPrefix: this.options.apiUrlPrefix,
         timeout: this.options.timeout,
-        verbose: this.options.verbose
+        verbose: this.options.verbose,
+        disableProgressBar: !this.options.progressBar
       });
     } catch (e) {
       if (

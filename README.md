@@ -12,6 +12,7 @@ Generally you can use these inputs:
 * `source`: The directory the add-on is in. For `sign`, this should be the xpi file instead
 * `artifacts`: The output directory, defaults to web-ext-artifacts
 * `verbose`: Output more debugging if set to true
+* `progressBar`: Enable the console progress bar
 * `channel`: The channel to use, `listed` or `unlisted`
 
 There are a few more specific to each command.
