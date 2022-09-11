@@ -14,43 +14,14 @@ var parse = require("shell-quote").parse;
  * @param {Object} options
  *   - `binary` path to Firefox binary to use
  *   - `profile` path to profile or profile name to use
+ *   - `binary-args-first` put the binary arguments first in the list of
+ *     command arguments. This is mainly useful to be able to run binaries via
+ *     third-party tools, e.g. `flatpak run org.mozilla.firefox`.
  * @return {Object} results
  */
 function runFirefox (options) {
-  options = options || {};
-  var profilePath = options.profile;
-  var env = Object.assign({}, process.env, options.env || {});
-  var args = [];
-  if (profilePath) {
-    if (isProfileName(profilePath)) {
-      args.unshift("-P", profilePath);
-    }
-    else {
-      args.unshift("-profile", profilePath);
-    }
-  }
-  if (options["new-instance"]) {
-    args.unshift("-new-instance");
-  }
-  if (options["no-remote"]) {
-    args.unshift("-no-remote");
-  }
-  if (options["foreground"]) {
-    args.unshift("-foreground");
-  }
-  if (options["binary-args"]) {
-    if (Array.isArray(options["binary-args"])) {
-      args = args.concat(options["binary-args"]);
-    }
-    else {
-      args = args.concat(parse(options["binary-args"]));
-    }
-  }
-  // support for starting the remote debugger server
-  if (options["listen"]) {
-    args.unshift(options.listen);
-    args.unshift("-start-debugger-server");
-  }
+  const env = Object.assign({}, process.env, options.env || {});
+  const args = buildArgs(options || {});
 
   return normalizeBinary(options.binary).then(function(binary) {
     // Using `spawn` so we can stream logging as they come in, rather than
@@ -85,3 +56,50 @@ function isProfileName (profile) {
   }
   return !/[\\\/]/.test(profile);
 }
+
+function buildArgs(options) {
+  let args = [];
+
+  const profilePath = options.profile;
+
+  if (profilePath) {
+    if (isProfileName(profilePath)) {
+      args.unshift("-P", profilePath);
+    }
+    else {
+      args.unshift("-profile", profilePath);
+    }
+  }
+
+  if (options["new-instance"]) {
+    args.unshift("-new-instance");
+  }
+
+  if (options["no-remote"]) {
+    args.unshift("-no-remote");
+  }
+
+  if (options["foreground"]) {
+    args.unshift("-foreground");
+  }
+
+  // support for starting the remote debugger server
+  if (options["listen"]) {
+    args.unshift(options.listen);
+    args.unshift("-start-debugger-server");
+  }
+
+  if (options["binary-args"]) {
+    const binaryArgs = Array.isArray(options["binary-args"]) ?
+      options["binary-args"] : parse(options["binary-args"]);
+
+    if (options["binary-args-first"]) {
+      args = binaryArgs.concat(args);
+    } else {
+      args = args.concat(binaryArgs);
+    }
+  }
+
+  return args;
+}
+module.exports.buildArgs = buildArgs;

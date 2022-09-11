@@ -1,21 +1,21 @@
-# camelcase [![Build Status](https://travis-ci.com/sindresorhus/camelcase.svg?branch=master)](https://travis-ci.com/sindresorhus/camelcase)
+# camelcase
 
 > Convert a dash/dot/underscore/space separated string to camelCase or PascalCase: `foo-bar` → `fooBar`
 
 Correctly handles Unicode strings.
 
+If you use this on untrusted user input, don't forget to limit the length to something reasonable.
+
 ## Install
 
+```sh
+npm install camelcase
 ```
-$ npm install camelcase
-```
-
-*If you need to support Firefox, stay on version 5 as version 6 uses regex features not available in Firefox.*
 
 ## Usage
 
 ```js
-const camelCase = require('camelcase');
+import camelCase from 'camelcase';
 
 camelCase('foo-bar');
 //=> 'fooBar'
@@ -26,8 +26,8 @@ camelCase('foo_bar');
 camelCase('Foo-Bar');
 //=> 'fooBar'
 
-camelCase('розовый_пушистый_единороги');
-//=> 'розовыйПушистыйЕдинороги'
+camelCase('розовый_пушистый_единорог');
+//=> 'розовыйПушистыйЕдинорог'
 
 camelCase('Foo-Bar', {pascalCase: true});
 //=> 'FooBar'
@@ -88,17 +88,17 @@ Uppercase the first character: `foo-bar` → `FooBar`
 Type: `boolean`\
 Default: `false`
 
-Preserve the consecutive uppercase characters: `foo-BAR` → `FooBAR`.
+Preserve consecutive uppercase characters: `foo-BAR` → `FooBAR`.
 
 ##### locale
 
-Type: `string | string[]`\
+Type: `false | string | string[]`\
 Default: The host environment’s current locale.
 
 The locale parameter indicates the locale to be used to convert to upper/lower case according to any locale-specific case mappings. If multiple locales are given in an array, the best available locale is used.
 
 ```js
-const camelCase = require('camelcase');
+import camelCase from 'camelcase';
 
 camelCase('lorem-ipsum', {locale: 'en-US'});
 //=> 'loremIpsum'
@@ -111,6 +111,20 @@ camelCase('lorem-ipsum', {locale: ['en-US', 'en-GB']});
 
 camelCase('lorem-ipsum', {locale: ['tr', 'TR', 'tr-TR']});
 //=> 'loremİpsum'
+```
+
+Setting `locale: false` ignores the platform locale and uses the [Unicode Default Case Conversion](https://unicode-org.github.io/icu/userguide/transforms/casemappings.html#simple-single-character-case-mapping) algorithm:
+
+```js
+import camelCase from 'camelcase';
+
+// On a platform with 'tr-TR'
+
+camelCase('lorem-ipsum');
+//=> 'loremİpsum'
+
+camelCase('lorem-ipsum', {locale: false});
+//=> 'loremIpsum'
 ```
 
 ## camelcase for enterprise

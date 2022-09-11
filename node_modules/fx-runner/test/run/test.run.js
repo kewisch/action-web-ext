@@ -11,6 +11,7 @@ var expect = chai.expect;
 var exec = utils.exec;
 var isWindows = /^win/.test(process.platform);
 var normalizeBinary = require("../../lib/utils").normalizeBinary;
+var run = require("../../lib/run");
 var cp = require("child_process");
 var parse = require("shell-quote").parse;
 
@@ -124,4 +125,35 @@ describe("concat binary arguments", function () {
     expect(arr[2]).to.be.equal("-c");
     expect(arr[3]).to.be.equal("d e");
   });
+});
+
+describe("buildArgs", () => {
+  it("returns a list of arguments", () => {
+    const options = {
+      foreground: true,
+      'binary-args': ["-a", 1, "-b", "--long-flag"],
+    };
+    expect(run.buildArgs(options)).to.be.eql([
+      "-foreground",
+      "-a",
+      1,
+      "-b",
+      "--long-flag",
+    ]);
+  });
+
+  it("puts the binary args first when `binary-args-first` is `true`", () => {
+    const options = {
+      foreground: true,
+      'binary-args': ["run", "app", "--long-flag"],
+      'binary-args-first': true,
+    };
+    expect(run.buildArgs(options)).to.be.eql([
+      "run",
+      "app",
+      "--long-flag",
+      "-foreground",
+    ]);
+  });
+
 });
