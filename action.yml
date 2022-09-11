@@ -20,6 +20,10 @@ inputs:
     description: "More debugging fore certain steps"
     required: false
     default: false
+  progressBar:
+    description: "Show the progress bar in command output"
+    required: false
+    default: false
   channel:
     description: "[lint+sign] The target channel"
     required: false
