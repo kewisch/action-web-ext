@@ -11,12 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: "Run ESLint"
-        uses: kewisch/action-yet-another-eslint@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: eslint src
   test:
     name: "Test"
     runs-on: ubuntu-latest
