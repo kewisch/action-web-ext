@@ -29,7 +29,7 @@ name: "Lint"
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:
@@ -62,7 +62,7 @@ name: "Build"
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
 
 jobs:
@@ -83,7 +83,7 @@ jobs:
           ignoreFiles: '[ "package.json","package-lock.json","yarn.lock" ]'
 
       - name: "Upload Artifact"
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v3
         with:
           name: target.xpi
           path: ${{ steps.web-ext-build.outputs.target }}
