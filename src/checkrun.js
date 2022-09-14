@@ -10,7 +10,7 @@ export default class CheckRun {
     this.id = null;
     this.name = name;
     this.context = context;
-    this.octokit = github.getOctokit(token || "dummy");
+    this.octokit = github.getOctokit(token);
 
     this.ready = !!token;
   }
@@ -20,34 +20,54 @@ export default class CheckRun {
       return;
     }
 
-    let res = await this.octokit.rest.checks.create({
+    let data = {
       ...this.context.repo,
       head_sha: this.context.sha,
       name: "Test: " + this.name,
       status: "in_progress",
-      started_at: new Date().toISOString()
-    });
+      started_at: new Date().toISOString(),
+    };
 
-    this.id = res.data.id;
+    try {
+      let res = await this.octokit.rest.checks.create(data);
+      this.id = res.data.id;
+    } catch (e) {
+      // No permissions, likely running in a pull request
+      this.ready = false;
+    }
   }
 
-  async complete(summary, nonfatal, fatal) {
+  async complete(errorCount, warningCount, annotations) {
     if (!this.ready) {
       return;
     }
 
-    await this.octokit.rest.checks.update({
+    let conclusion = "success";
+    if (errorCount > 0) {
+      conclusion = "failure";
+    } else if (warningCount > 0) {
+      conclusion = "neutral";
+    }
+
+    let data = {
       ...this.context.repo,
       head_sha: this.context.sha,
       check_run_id: this.id,
       status: "completed",
       completed_at: new Date().toISOString(),
-      conclusion: fatal.length ? "failure" : "success",
+      conclusion: conclusion,
       output: {
         title: this.name,
-        summary: summary,
-        annotations: nonfatal.concat(fatal)
-      }
-    });
+        summary: `${errorCount} errors, ${warningCount} warnings`,
+        annotations: annotations,
+      },
+    };
+
+    try {
+      await this.octokit.rest.checks.update(data);
+    } catch (e) {
+      console.log(JSON.stringify(data, null, 2));
+      throw e;
+    }
   }
 }
