@@ -126,6 +126,7 @@ Object.defineProperty(exports, 'defaults', {
 			prefix: globalPrefix,
 			production: process.env.NODE_ENV === 'production',
 			'progress': !process.env.TRAVIS && !process.env.CI,
+			provenance: false,
 			proxy: null,
 			'https-proxy': null,
 			'no-proxy': null,

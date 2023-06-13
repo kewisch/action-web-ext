@@ -6,6 +6,12 @@ Encode `FormData` content into the `multipart/form-data` format
 [![CI](https://github.com/octet-stream/form-data-encoder/workflows/CI/badge.svg)](https://github.com/octet-stream/form-data-encoder/actions/workflows/ci.yml)
 [![ESLint](https://github.com/octet-stream/form-data-encoder/workflows/ESLint/badge.svg)](https://github.com/octet-stream/form-data-encoder/actions/workflows/eslint.yml)
 
+## Requirements
+
+- Node.js v14.17 or higher;
+- Runtime should support `TextEncoder`, `TextDecoder`, `WeakMap`, `WeakSet` and async generator functions;
+- For TypeScript users: tsc v4.3 or higher.
+
 ## Installation
 
 You can install this package using npm:

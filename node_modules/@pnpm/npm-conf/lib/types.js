@@ -90,6 +90,7 @@ exports.types = {
 	production: Boolean,
 	progress: Boolean,
 	proxy: [null, false, url],
+	provenance: Boolean,
 	// allow proxy to be disabled explicitly
 	'read-only': Boolean,
 	'rebuild-bundle': Boolean,

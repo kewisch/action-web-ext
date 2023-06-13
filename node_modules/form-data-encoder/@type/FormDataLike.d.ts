@@ -2,7 +2,7 @@ import { FileLike } from "./FileLike.js";
 /**
  * A `string` or `File` that represents a single value from a set of `FormData` key-value pairs.
  */
-export declare type FormDataEntryValue = string | FileLike;
+export type FormDataEntryValue = string | FileLike;
 /**
  * This interface reflects minimal shape of the FormData
  */

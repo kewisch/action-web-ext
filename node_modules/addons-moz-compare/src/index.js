@@ -79,11 +79,8 @@
 
     parts.a = parseInt(versionPart, 10);
 
-    let nextPartPosition = versionPart.indexOf(parts.a.toString()[0]) + 1;
-    // Account for the minus sign.
-    if (parts.a.toString().startsWith('-')) {
-      nextPartPosition++;
-    }
+    let nextPartPosition =
+      versionPart.indexOf(parts.a.toString()) + parts.a.toString().length;
 
     const rest = versionPart.substr(nextPartPosition);
 

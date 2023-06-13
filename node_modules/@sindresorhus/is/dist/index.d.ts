@@ -4,10 +4,10 @@
 import type { Buffer } from 'node:buffer';
 import type { Class, Falsy, TypedArray, ObservableLike, Primitive, WeakRef } from './types.js';
 declare const objectTypeNames: readonly ["Function", "Generator", "AsyncGenerator", "GeneratorFunction", "AsyncGeneratorFunction", "AsyncFunction", "Observable", "Array", "Buffer", "Blob", "Object", "RegExp", "Date", "Error", "Map", "Set", "WeakMap", "WeakSet", "WeakRef", "ArrayBuffer", "SharedArrayBuffer", "DataView", "Promise", "URL", "FormData", "URLSearchParams", "HTMLElement", "NaN", "Int8Array", "Uint8Array", "Uint8ClampedArray", "Int16Array", "Uint16Array", "Int32Array", "Uint32Array", "Float32Array", "Float64Array", "BigInt64Array", "BigUint64Array"];
-declare type ObjectTypeName = typeof objectTypeNames[number];
+type ObjectTypeName = typeof objectTypeNames[number];
 declare const primitiveTypeNames: readonly ["null", "undefined", "string", "number", "bigint", "boolean", "symbol"];
-declare type PrimitiveTypeName = typeof primitiveTypeNames[number];
-export declare type TypeName = ObjectTypeName | PrimitiveTypeName;
+type PrimitiveTypeName = typeof primitiveTypeNames[number];
+export type TypeName = ObjectTypeName | PrimitiveTypeName;
 declare function is(value: unknown): TypeName;
 declare namespace is {
     var undefined: (value: unknown) => value is undefined;
@@ -16,10 +16,10 @@ declare namespace is {
     var bigint: (value: unknown) => value is bigint;
     var function_: (value: unknown) => value is Function;
     var null_: (value: unknown) => value is null;
-    var class_: (value: unknown) => value is Class<unknown, any[]>;
+    var class_: (value: unknown) => value is Class;
     var boolean: (value: unknown) => value is boolean;
     var symbol: (value: unknown) => value is symbol;
-    var numericString: (value: unknown) => value is string;
+    var numericString: (value: unknown) => value is `${number}`;
     var array: <T = unknown>(value: unknown, assertion?: ((value: T) => value is T) | undefined) => value is T[];
     var buffer: (value: unknown) => value is Buffer;
     var blob: (value: unknown) => value is Blob;
@@ -58,7 +58,7 @@ declare namespace is {
     var sharedArrayBuffer: (value: unknown) => value is SharedArrayBuffer;
     var dataView: (value: unknown) => value is DataView;
     var enumCase: <T = unknown>(value: unknown, targetEnum: T) => boolean;
-    var directInstanceOf: <T>(instance: unknown, class_: Class<T, any[]>) => instance is T;
+    var directInstanceOf: <T>(instance: unknown, class_: Class<T>) => instance is T;
     var urlInstance: (value: unknown) => value is URL;
     var urlString: (value: unknown) => value is string;
     var truthy: <T>(value: Falsy | T) => value is T;
@@ -95,16 +95,16 @@ declare namespace is {
     var any: (predicate: Predicate | Predicate[], ...values: unknown[]) => boolean;
     var all: (predicate: Predicate, ...values: unknown[]) => boolean;
 }
-export interface ArrayLike<T> {
+export type ArrayLike<T> = {
     readonly [index: number]: T;
     readonly length: number;
-}
-export interface NodeStream extends NodeJS.EventEmitter {
+};
+export type NodeStream = {
     pipe<T extends NodeJS.WritableStream>(destination: T, options?: {
         end?: boolean;
     }): T;
-}
-export declare type Predicate = (value: unknown) => boolean;
+} & NodeJS.EventEmitter;
+export type Predicate = (value: unknown) => boolean;
 export declare const enum AssertionTypeDescription {
     class_ = "Class",
     numericString = "string with a number",
@@ -144,7 +144,7 @@ export declare const enum AssertionTypeDescription {
     any = "predicate returns truthy for any value",
     all = "predicate returns truthy for all values"
 }
-interface Assert {
+type Assert = {
     undefined: (value: unknown) => asserts value is undefined;
     string: (value: unknown) => asserts value is string;
     number: (value: unknown) => asserts value is number;
@@ -154,7 +154,7 @@ interface Assert {
     class_: (value: unknown) => asserts value is Class;
     boolean: (value: unknown) => asserts value is boolean;
     symbol: (value: unknown) => asserts value is symbol;
-    numericString: (value: unknown) => asserts value is string;
+    numericString: (value: unknown) => asserts value is `${number}`;
     array: <T = unknown>(value: unknown, assertion?: (element: unknown) => asserts element is T) => asserts value is T[];
     buffer: (value: unknown) => asserts value is Buffer;
     blob: (value: unknown) => asserts value is Blob;
@@ -229,7 +229,7 @@ interface Assert {
     inRange: (value: number, range: number | number[]) => asserts value is number;
     any: (predicate: Predicate | Predicate[], ...values: unknown[]) => void | never;
     all: (predicate: Predicate, ...values: unknown[]) => void | never;
-}
+};
 export declare const assert: Assert;
 export default is;
 export type { Class, TypedArray, ObservableLike, Primitive } from './types.js';

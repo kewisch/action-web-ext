@@ -81,20 +81,27 @@ function is(value) {
         return 'null';
     }
     switch (typeof value) {
-        case 'undefined':
+        case 'undefined': {
             return 'undefined';
-        case 'string':
+        }
+        case 'string': {
             return 'string';
-        case 'number':
+        }
+        case 'number': {
             return Number.isNaN(value) ? 'NaN' : 'number';
-        case 'boolean':
+        }
+        case 'boolean': {
             return 'boolean';
-        case 'function':
+        }
+        case 'function': {
             return 'Function';
-        case 'bigint':
+        }
+        case 'bigint': {
             return 'bigint';
-        case 'symbol':
+        }
+        case 'symbol': {
             return 'symbol';
+        }
         default:
     }
     if (is.observable(value)) {
@@ -135,6 +142,7 @@ is.array = (value, assertion) => {
     if (!is.function_(assertion)) {
         return true;
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return value.every(element => assertion(element));
 };
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
@@ -177,6 +185,7 @@ is.bigUint64Array = isObjectOfType('BigUint64Array');
 is.arrayBuffer = isObjectOfType('ArrayBuffer');
 is.sharedArrayBuffer = isObjectOfType('SharedArrayBuffer');
 is.dataView = isObjectOfType('DataView');
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 is.enumCase = (value, targetEnum) => Object.values(targetEnum).includes(value);
 is.directInstanceOf = (instance, class_) => Object.getPrototypeOf(instance) === class_.prototype;
 is.urlInstance = (value) => isObjectOfType('URL')(value);

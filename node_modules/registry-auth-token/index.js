@@ -18,10 +18,14 @@ module.exports = function getRegistryAuthToken () {
     options = Object.assign({}, arguments[0])
   }
   options = options || {}
-  options.npmrc = options.npmrc ? {
-    ...options.npmrc,
-    get: (key) => options.npmrc[key]
-  } : npmConf()
+
+  const providedNpmrc = options.npmrc
+  options.npmrc = (options.npmrc ? {
+    config: {
+      get: (key) => providedNpmrc[key]
+    }
+  } : npmConf()).config
+
   checkUrl = checkUrl || options.npmrc.get('registry') || npmConf.defaults.registry
   return getRegistryAuthInfo(checkUrl, options) || getLegacyAuthInfo(options.npmrc)
 }

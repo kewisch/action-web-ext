@@ -10,6 +10,7 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
 var _FormDataEncoder_instances, _FormDataEncoder_CRLF, _FormDataEncoder_CRLF_BYTES, _FormDataEncoder_CRLF_BYTES_LENGTH, _FormDataEncoder_DASHES, _FormDataEncoder_encoder, _FormDataEncoder_footer, _FormDataEncoder_form, _FormDataEncoder_options, _FormDataEncoder_getFieldHeader, _FormDataEncoder_getContentLength;
+import { getStreamIterator } from "./util/getStreamIterator.js";
 import { createBoundary } from "./util/createBoundary.js";
 import { normalizeValue } from "./util/normalizeValue.js";
 import { isPlainObject } from "./util/isPlainObject.js";
@@ -89,7 +90,7 @@ export class FormDataEncoder {
     async *encode() {
         for (const part of this.values()) {
             if (isFile(part)) {
-                yield* part.stream();
+                yield* getStreamIterator(part.stream());
             }
             else {
                 yield part;

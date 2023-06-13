@@ -44,11 +44,9 @@ class Conf extends ConfigChain {
 			if (error.code === 'ENOENT') {
 				this.add({}, marker);
 			} else {
-				throw error;
+				return `Issue while reading "${file}". ${error.message}`
 			}
 		}
-
-		return this;
 	}
 
 	// https://github.com/npm/cli/blob/latest/lib/config/core.js#L341-L357
