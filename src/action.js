@@ -24,15 +24,17 @@ async function getManifest(xpi) {
     let zipFile = await yauzl.open(xpi);
     let manifest;
 
-    for (let entry = await zipFile.readEntry(); entry; entry = await zipFile.readEntry()) {
-      if (entry && entry.fileName == "manifest.json") {
-        let readStream = await entry.openReadStream();
-        manifest = JSON.parse(await getStream(readStream));
-        break;
+    try {
+      for await (let entry of zipFile) {
+        if (entry.filename == "manifest.json") {
+          let readStream = await entry.openReadStream();
+          manifest = JSON.parse(await getStream(readStream));
+          break;
+        }
       }
+    } finally {
+      await zipFile.close();
     }
-
-    await zipFile.close();
     return manifest;
   } else if (stat.isDirectory()) {
     let contents = await fs.promises.readFile(path.join(xpi, "manifest.json"), { encoding: "utf-8" });
