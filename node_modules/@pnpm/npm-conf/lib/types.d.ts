@@ -78,6 +78,7 @@ export var types: {
     prefix: import("path").PlatformPath;
     production: BooleanConstructor;
     progress: BooleanConstructor;
+    provenance: BooleanConstructor;
     proxy: (boolean | typeof import("url") | null)[];
     'read-only': BooleanConstructor;
     'rebuild-bundle': BooleanConstructor;

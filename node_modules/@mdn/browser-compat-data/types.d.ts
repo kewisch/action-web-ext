@@ -249,6 +249,7 @@ export interface StatusBlock {
 
 export interface MetaBlock {
   version: string;
+  timestamp: string;
 }
 
 export interface CompatData {

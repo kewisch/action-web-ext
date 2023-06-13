@@ -1,3 +1,7 @@
+# 4.3.2
+
+- bump xml2js
+
 # 4.2.2
 
 - another fix for cleanOnExit
