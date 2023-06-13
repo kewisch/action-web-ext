@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: "Run ESLint"
         run: npx eslint src
@@ -20,14 +20,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
+
+      - name: "npm ci"
+        run: npm ci
 
       - name: "Bump version"
         run: |
           export VERSION="1.$(echo ${GITHUB_SHA:0:4} | tr abcdef 123456).$(echo ${GITHUB_SHA:4:4} | tr abcdef 123456)"
           jq ".version = \"$VERSION\"" test/extension/manifest.json > manifest.json~
           mv manifest.json~ test/extension/manifest.json
-          git diff
+          git diff test/extension
 
       - name: "Self-test: lint"
         id: web-ext-lint

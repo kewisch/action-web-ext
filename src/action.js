@@ -103,7 +103,7 @@ export default class WebExtAction {
 
     await check.complete(summaryLine, nonfatal, fatal);
 
-    if (!this.options.token) {
+    if (!check.ready) {
       console.log(results.notices.concat(results.warnings).concat(results.errors).map(linterToString).join("\n") + "\n");
     }
     console.log(summaryLine);
@@ -134,6 +134,7 @@ export default class WebExtAction {
   async cmd_sign() {
     // Doing signing directly so we can pass in a source xpi as well
     let manifest = await getManifest(this.options.sourceDir);
+
     let id;
     try {
       id = manifest.browser_specific_settings.gecko.id;
