@@ -13,7 +13,7 @@ export default class CheckRun {
     if (token) {
       this.octokit = github.getOctokit(token);
     }
-    
+
     this.ready = !!token;
   }
 
