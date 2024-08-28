@@ -1,7 +1,7 @@
 web-ext GitHub Action
 =====================
 
-[![Build Status](https://github.com/kewisch/action-web-ext/workflows/Build/badge.svg)](https://github.com/kewisch/action-web-ext/actions?workflow=Build)
+[![Build](https://github.com/kewisch/action-web-ext/actions/workflows/ci.yml/badge.svg)](https://github.com/kewisch/action-web-ext/actions/workflows/ci.yml)
 
 This action allows you to run a few [mozilla/web-ext](https://github.com/mozilla/web-ext) commands
 useful during add-on development. It supports `lint`, `build` and `sign`.
