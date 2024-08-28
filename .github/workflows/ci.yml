@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Run ESLint"
         run: npx eslint src
@@ -20,14 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "npm ci"
         run: npm ci
 
       - name: "Bump version"
         run: |
-          export VERSION="1.$(echo ${GITHUB_SHA:0:4} | tr abcdef 123456).$(echo ${GITHUB_SHA:4:4} | tr abcdef 123456)"
+          export VERSION=1.${GITHUB_RUN_ID:0:4}.${GITHUB_RUN_ID:4} 
           jq ".version = \"$VERSION\"" test/extension/manifest.json > manifest.json~
           mv manifest.json~ test/extension/manifest.json
           git diff test/extension
@@ -74,13 +74,13 @@ jobs:
           apiSecret: ${{ secrets.ATN_SIGN_SECRET }}
 
       - name: "Upload Unsigned"
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: unsigned.xpi
           path: ${{ steps.web-ext-build.outputs.target }}
 
       - name: "Upload AMO signed"
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v4
         with:
           name: amo-signed.xpi
           path: ${{ steps.web-ext-sign-amo.outputs.target }}
