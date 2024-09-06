@@ -15,6 +15,7 @@ jobs:
 
       - name: "Run ESLint"
         run: npx eslint src
+
   test:
     name: "Test"
     runs-on: ubuntu-latest
@@ -53,6 +54,7 @@ jobs:
           channel: unlisted
 
       - name: "Self-test: AMO release"
+        if: github.event_name != 'pull_request'
         id: web-ext-sign-amo
         uses: "./"
         with:
@@ -63,6 +65,7 @@ jobs:
           apiSecret: ${{ secrets.AMO_SIGN_SECRET }}
 
       - name: "Self-test: ATN release"
+        if: github.event_name != 'pull_request'
         id: web-ext-sign-atn
         uses: "./"
         with:
@@ -80,6 +83,7 @@ jobs:
           path: ${{ steps.web-ext-build.outputs.target }}
 
       - name: "Upload AMO signed"
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: amo-signed.xpi
