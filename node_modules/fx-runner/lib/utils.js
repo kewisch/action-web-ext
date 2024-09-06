@@ -53,7 +53,9 @@ function normalizeBinary (binaryPath, platform, arch) {
       var isAppPath = path.extname(binaryPath) === ".app";
 
       // On OSX, if given the app path, resolve to the actual binary
-      binaryPath = isAppPath ? path.join(binaryPath, "Contents/MacOS/firefox-bin") :
+      // We use `firefox` since `firefox-bin` is gone thanks to
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1871447
+      binaryPath = isAppPath ? path.join(binaryPath, "Contents/MacOS/firefox") :
                    binaryPath;
 
       return resolve(binaryPath);
@@ -113,12 +115,12 @@ function getRegistryValue(hive, key, name) {
 }
 
 normalizeBinary.paths = {
-  "firefox on osx": "/Applications/Firefox.app/Contents/MacOS/firefox-bin",
+  "firefox on osx": "/Applications/Firefox.app/Contents/MacOS/firefox",
   // the name of the beta application bundle is the same as the stable one
-  "beta on osx": "/Applications/Firefox.app/Contents/MacOS/firefox-bin",
-  "firefoxdeveloperedition on osx": "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox-bin",
-  "aurora on osx": "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin",
-  "nightly on osx": "/Applications/Firefox Nightly.app/Contents/MacOS/firefox-bin",
+  "beta on osx": "/Applications/Firefox.app/Contents/MacOS/firefox",
+  "firefoxdeveloperedition on osx": "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox",
+  "aurora on osx": "/Applications/FirefoxAurora.app/Contents/MacOS/firefox",
+  "nightly on osx": "/Applications/Firefox Nightly.app/Contents/MacOS/firefox",
 };
 
 normalizeBinary.appNames = {

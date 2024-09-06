@@ -1,3 +1,4 @@
+'use strict';
 var uncurryThis = require('../internals/function-uncurry-this');
 var isArray = require('../internals/is-array');
 var isCallable = require('../internals/is-callable');
@@ -14,7 +15,7 @@ module.exports = function (replacer) {
   for (var i = 0; i < rawLength; i++) {
     var element = replacer[i];
     if (typeof element == 'string') push(keys, element);
-    else if (typeof element == 'number' || classof(element) == 'Number' || classof(element) == 'String') push(keys, toString(element));
+    else if (typeof element == 'number' || classof(element) === 'Number' || classof(element) === 'String') push(keys, toString(element));
   }
   var keysLength = keys.length;
   var root = true;

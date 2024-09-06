@@ -6,10 +6,10 @@ export function concat(...buffers) {
     const size = buffers.reduce((acc, { length }) => acc + length, 0);
     const buf = new Uint8Array(size);
     let i = 0;
-    buffers.forEach((buffer) => {
+    for (const buffer of buffers) {
         buf.set(buffer, i);
         i += buffer.length;
-    });
+    }
     return buf;
 }
 export function p2s(alg, p2sInput) {
