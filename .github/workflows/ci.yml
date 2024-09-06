@@ -78,3 +78,16 @@ jobs:
           apiUrlPrefix: "https://addons.thunderbird.net/api/v3"
           apiKey: ${{ secrets.ATN_SIGN_KEY }}
           apiSecret: ${{ secrets }}
+
+      - name: "Upload Unsigned"
+        uses: actions/upload-artifact@v4
+        with:
+          name: unsigned.xpi
+          path: ${{ steps.web-ext-build.outputs.target }}
+
+      - name: "Upload AMO signed"
+        if: env.HAS_AMO_SIGN_KEY == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: amo-signed.xpi
+          path: ${{ steps.web-ext-sign-amo.outputs.target }}
