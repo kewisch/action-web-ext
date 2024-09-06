@@ -77,7 +77,7 @@ jobs:
           channel: unlisted
           apiUrlPrefix: "https://addons.thunderbird.net/api/v3"
           apiKey: ${{ secrets.ATN_SIGN_KEY }}
-          apiSecret: ${{ secrets }}
+          apiSecret: ${{ secrets.ATN_SIGN_SECRET }}
 
       - name: "Upload Unsigned"
         uses: actions/upload-artifact@v4
