@@ -1,6 +1,6 @@
 import { JOSENotSupported } from '../util/errors.js';
 function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader, joseHeader) {
-    if (joseHeader.crit !== undefined && protectedHeader.crit === undefined) {
+    if (joseHeader.crit !== undefined && protectedHeader?.crit === undefined) {
         throw new Err('"crit" (Critical) Header Parameter MUST be integrity protected');
     }
     if (!protectedHeader || protectedHeader.crit === undefined) {
@@ -25,7 +25,7 @@ function validateCrit(Err, recognizedDefault, recognizedOption, protectedHeader,
         if (joseHeader[parameter] === undefined) {
             throw new Err(`Extension Header Parameter "${parameter}" is missing`);
         }
-        else if (recognized.get(parameter) && protectedHeader[parameter] === undefined) {
+        if (recognized.get(parameter) && protectedHeader[parameter] === undefined) {
             throw new Err(`Extension Header Parameter "${parameter}" MUST be integrity protected`);
         }
     }

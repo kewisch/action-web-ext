@@ -23,9 +23,9 @@ written will be emitted. Otherwise, it'll do a minimal amount of
 Buffer copying to ensure proper Streams semantics when `read(n)`
 is called.
 
-`objectMode` can also be set by doing `stream.objectMode = true`,
-or by writing any non-string/non-buffer data. `objectMode` cannot
-be set to false once it is set.
+`objectMode` can only be set at instantiation. Attempting to
+write something other than a String or Buffer without having set
+`objectMode` in the options will throw an error.
 
 This is not a `through` or `through2` stream. It doesn't
 transform the data, it just passes it right through. If you want
@@ -53,6 +53,65 @@ ways, check out:
 - [npm-registry-fetch](http://npm.im/npm-registry-fetch)
 - [minipass-json-stream](http://npm.im/minipass-json-stream)
 - [minipass-sized](http://npm.im/minipass-sized)
+
+## Usage in TypeScript
+
+The `Minipass` class takes three type template definitions:
+
+- `RType` the type being read, which defaults to `Buffer`. If
+  `RType` is `string`, then the constructor _must_ get an options
+  object specifying either an `encoding` or `objectMode: true`.
+  If it's anything other than `string` or `Buffer`, then it
+  _must_ get an options object specifying `objectMode: true`.
+- `WType` the type being written. If `RType` is `Buffer` or
+  `string`, then this defaults to `ContiguousData` (Buffer,
+  string, ArrayBuffer, or ArrayBufferView). Otherwise, it
+  defaults to `RType`.
+- `Events` type mapping event names to the arguments emitted
+  with that event, which extends `Minipass.Events`.
+
+To declare types for custom events in subclasses, extend the
+third parameter with your own event signatures. For example:
+
+```js
+import { Minipass } from 'minipass'
+
+// a NDJSON stream that emits 'jsonError' when it can't stringify
+export interface Events extends Minipass.Events {
+  jsonError: [e: Error]
+}
+
+export class NDJSONStream extends Minipass<string, any, Events> {
+  constructor() {
+    super({ objectMode: true })
+  }
+
+  // data is type `any` because that's WType
+  write(data, encoding, cb) {
+    try {
+      const json = JSON.stringify(data)
+      return super.write(json + '\n', encoding, cb)
+    } catch (er) {
+      if (!er instanceof Error) {
+        er = Object.assign(new Error('json stringify failed'), {
+          cause: er,
+        })
+      }
+      // trying to emit with something OTHER than an error will
+      // fail, because we declared the event arguments type.
+      this.emit('jsonError', er)
+    }
+  }
+}
+
+const s = new NDJSONStream()
+s.on('jsonError', e => {
+  // here, TS knows that e is an Error
+})
+```
+
+Emitting/handling events that aren't declared in this way is
+fine, but the arguments will be typed as `unknown`.
 
 ## Differences from Node.js Streams
 
@@ -92,9 +151,9 @@ Example:
 
 ```js
 // hybrid module, either works
-import Minipass from 'minipass'
+import { Minipass } from 'minipass'
 // or:
-const Minipass = require('minipass')
+const { Minipass } = require('minipass')
 
 const stream = new Minipass()
 stream.on('data', () => console.log('data event'))
@@ -116,9 +175,9 @@ options, or by setting `stream.async = true` later on.
 
 ```js
 // hybrid module, either works
-import Minipass from 'minipass'
+import { Minipass } from 'minipass'
 // or:
-const Minipass = require('minipass')
+const { Minipass } = require('minipass')
 
 const asyncStream = new Minipass({ async: true })
 asyncStream.on('data', () => console.log('data event'))
@@ -135,7 +194,7 @@ Switching _out_ of async mode is unsafe, as it could cause data
 corruption, and so is not enabled. Example:
 
 ```js
-import Minipass from 'minipass'
+import { Minipass } from 'minipass'
 const stream = new Minipass({ encoding: 'utf8' })
 stream.on('data', chunk => console.log(chunk))
 stream.async = true
@@ -156,7 +215,7 @@ To avoid this problem, once set into async mode, any attempt to
 make the stream sync again will be ignored.
 
 ```js
-const Minipass = require('minipass')
+const { Minipass } = require('minipass')
 const stream = new Minipass({ encoding: 'utf8' })
 stream.on('data', chunk => console.log(chunk))
 stream.async = true
@@ -384,8 +443,8 @@ It's a stream! Use it like a stream and it'll most likely do what
 you want.
 
 ```js
-import Minipass from 'minipass'
-const mp = new Minipass(options) // optional: { encoding, objectMode }
+import { Minipass } from 'minipass'
+const mp = new Minipass(options) // options is optional
 mp.write('foo')
 mp.pipe(someOtherStream)
 mp.end('bar')
@@ -424,8 +483,6 @@ Implements the user-facing portions of Node.js's `Readable` and
 - `end([chunk, [encoding]], [callback])` - Signal that you have
   no more data to write. This will queue an `end` event to be
   fired when all the data has been consumed.
-- `setEncoding(encoding)` - Set the encoding for data coming of
-  the stream. This can only be done once.
 - `pause()` - No more data for a while, please. This also
   prevents `end` from being emitted for empty streams until the
   stream is resumed.
@@ -476,9 +533,7 @@ Implements the user-facing portions of Node.js's `Readable` and
 
 - `bufferLength` Read-only. Total number of bytes buffered, or in
   the case of objectMode, the total number of objects.
-- `encoding` The encoding that has been set. (Setting this is
-  equivalent to calling `setEncoding(enc)` and has the same
-  prohibition against setting multiple times.)
+- `encoding` Read-only. The encoding that has been set.
 - `flowing` Read-only. Boolean indicating whether a chunk written
   to the stream will be immediately emitted.
 - `emittedEnd` Read-only. Boolean indicating whether the end-ish
@@ -495,7 +550,6 @@ Implements the user-facing portions of Node.js's `Readable` and
 - `paused` True if the stream has been explicitly paused,
   otherwise false.
 - `objectMode` Indicates whether the stream is in `objectMode`.
-  Once set to `true`, it cannot be set to `false`.
 - `aborted` Readonly property set when the `AbortSignal`
   dispatches an `abort` event.
 
@@ -699,6 +753,7 @@ class SlowEnd extends Minipass {
         console.log('ok, ready to end now')
         super.emit('end', ...args)
       }, 100)
+      return true
     } else {
       return super.emit(ev, ...args)
     }
@@ -735,15 +790,17 @@ class NDJSONEncode extends Minipass {
 
 ```js
 class NDJSONDecode extends Minipass {
-  constructor (options) {
+  constructor(options) {
     // always be in object mode, as far as Minipass is concerned
     super({ objectMode: true })
     this._jsonBuffer = ''
   }
-  write (chunk, encoding, cb) {
-    if (typeof chunk === 'string' &&
-        typeof encoding === 'string' &&
-        encoding !== 'utf8') {
+  write(chunk, encoding, cb) {
+    if (
+      typeof chunk === 'string' &&
+      typeof encoding === 'string' &&
+      encoding !== 'utf8'
+    ) {
       chunk = Buffer.from(chunk, encoding).toString()
     } else if (Buffer.isBuffer(chunk)) {
       chunk = chunk.toString()
@@ -762,8 +819,7 @@ class NDJSONDecode extends Minipass {
         continue
       }
     }
-    if (cb)
-      cb()
+    if (cb) cb()
   }
 }
 ```

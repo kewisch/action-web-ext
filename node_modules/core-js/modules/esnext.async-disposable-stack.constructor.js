@@ -27,7 +27,11 @@ var HINT = 'async-dispose';
 var DISPOSED = 'disposed';
 var PENDING = 'pending';
 
-var ALREADY_DISPOSED = ASYNC_DISPOSABLE_STACK + ' already disposed';
+var getPendingAsyncDisposableStackInternalState = function (stack) {
+  var internalState = getAsyncDisposableStackInternalState(stack);
+  if (internalState.state === DISPOSED) throw new $ReferenceError(ASYNC_DISPOSABLE_STACK + ' already disposed');
+  return internalState;
+};
 
 var $AsyncDisposableStack = function AsyncDisposableStack() {
   setInternalState(anInstance(this, AsyncDisposableStackPrototype), {
@@ -46,7 +50,7 @@ defineBuiltIns(AsyncDisposableStackPrototype, {
     var asyncDisposableStack = this;
     return new Promise(function (resolve, reject) {
       var internalState = getAsyncDisposableStackInternalState(asyncDisposableStack);
-      if (internalState.state == DISPOSED) return resolve(undefined);
+      if (internalState.state === DISPOSED) return resolve(undefined);
       internalState.state = DISPOSED;
       if (!DESCRIPTORS) asyncDisposableStack.disposed = true;
       var stack = internalState.stack;
@@ -84,32 +88,29 @@ defineBuiltIns(AsyncDisposableStackPrototype, {
     });
   },
   use: function use(value) {
-    var internalState = getAsyncDisposableStackInternalState(this);
-    if (internalState.state == DISPOSED) throw $ReferenceError(ALREADY_DISPOSED);
-    addDisposableResource(internalState, value, HINT);
+    addDisposableResource(getPendingAsyncDisposableStackInternalState(this), value, HINT);
     return value;
   },
   adopt: function adopt(value, onDispose) {
-    var internalState = getAsyncDisposableStackInternalState(this);
-    if (internalState.state == DISPOSED) throw $ReferenceError(ALREADY_DISPOSED);
+    var internalState = getPendingAsyncDisposableStackInternalState(this);
     aCallable(onDispose);
     addDisposableResource(internalState, undefined, HINT, function () {
-      onDispose(value);
+      return onDispose(value);
     });
     return value;
   },
   defer: function defer(onDispose) {
-    var internalState = getAsyncDisposableStackInternalState(this);
-    if (internalState.state == DISPOSED) throw $ReferenceError(ALREADY_DISPOSED);
+    var internalState = getPendingAsyncDisposableStackInternalState(this);
     aCallable(onDispose);
     addDisposableResource(internalState, undefined, HINT, onDispose);
   },
   move: function move() {
-    var internalState = getAsyncDisposableStackInternalState(this);
-    if (internalState.state == DISPOSED) throw $ReferenceError(ALREADY_DISPOSED);
+    var internalState = getPendingAsyncDisposableStackInternalState(this);
     var newAsyncDisposableStack = new $AsyncDisposableStack();
     getAsyncDisposableStackInternalState(newAsyncDisposableStack).stack = internalState.stack;
     internalState.stack = [];
+    internalState.state = DISPOSED;
+    if (!DESCRIPTORS) this.disposed = true;
     return newAsyncDisposableStack;
   }
 });
@@ -117,13 +118,13 @@ defineBuiltIns(AsyncDisposableStackPrototype, {
 if (DESCRIPTORS) defineBuiltInAccessor(AsyncDisposableStackPrototype, 'disposed', {
   configurable: true,
   get: function disposed() {
-    return getAsyncDisposableStackInternalState(this).state == DISPOSED;
+    return getAsyncDisposableStackInternalState(this).state === DISPOSED;
   }
 });
 
 defineBuiltIn(AsyncDisposableStackPrototype, ASYNC_DISPOSE, AsyncDisposableStackPrototype.disposeAsync, { name: 'disposeAsync' });
 defineBuiltIn(AsyncDisposableStackPrototype, TO_STRING_TAG, ASYNC_DISPOSABLE_STACK, { nonWritable: true });
 
-$({ global: true, constructor: true, forced: true }, {
+$({ global: true, constructor: true }, {
   AsyncDisposableStack: $AsyncDisposableStack
 });

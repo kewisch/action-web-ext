@@ -211,6 +211,7 @@ FirefoxProfile.copy = function (options, cb) {
     return;
   }
   var profile = new FirefoxProfile({
+    profileDirectory: opts.profileDirectory,
     destinationDirectory: opts.destinationDirectory,
   });
   profile._copy(opts.profileDirectory, function () {
