@@ -19,6 +19,9 @@ jobs:
   test:
     name: "Test"
     runs-on: ubuntu-latest
+    env:
+      HAS_AMO_SIGN_KEY: ${{ secrets.AMO_SIGN_KEY != '' && secrets.AMO_SIGN_KEY != null }}
+      HAS_ATN_SIGN_KEY: ${{ secrets.ATN_SIGN_KEY != '' && secrets.ATN_SIGN_KEY != null }}
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
@@ -54,7 +57,7 @@ jobs:
           channel: unlisted
 
       - name: "Self-test: AMO release"
-        if: secrets.AMO_SIGN_KEY != '' && secrets.AMO_SIGN_SECRET != ''
+        if: env.HAS_AMO_SIGN_KEY == 'true'
         id: web-ext-sign-amo
         uses: "./"
         with:
@@ -65,7 +68,7 @@ jobs:
           apiSecret: ${{ secrets.AMO_SIGN_SECRET }}
 
       - name: "Self-test: ATN release"
-        if: secrets.ATN_SIGN_KEY != '' && secrets.ATN_SIGN_SECRET != ''
+        if: env.HAS_ATN_SIGN_KEY == 'true'
         id: web-ext-sign-atn
         uses: "./"
         with:
@@ -74,17 +77,4 @@ jobs:
           channel: unlisted
           apiUrlPrefix: "https://addons.thunderbird.net/api/v3"
           apiKey: ${{ secrets.ATN_SIGN_KEY }}
-          apiSecret: ${{ secrets.ATN_SIGN_SECRET }}
-
-      - name: "Upload Unsigned"
-        uses: actions/upload-artifact@v4
-        with:
-          name: unsigned.xpi
-          path: ${{ steps.web-ext-build.outputs.target }}
-
-      - name: "Upload AMO signed"
-        if: secrets.AMO_SIGN_KEY != '' && secrets.AMO_SIGN_SECRET != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: amo-signed.xpi
-          path: ${{ steps.web-ext-sign-amo.outputs.target }}
+          apiSecret: ${{ secrets
