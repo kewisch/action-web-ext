@@ -77,4 +77,4 @@ jobs:
           channel: unlisted
           apiUrlPrefix: "https://addons.thunderbird.net/api/v3"
           apiKey: ${{ secrets.ATN_SIGN_KEY }}
-          apiSecret: ${{ secrets
+          apiSecret: ${{ secrets }}
