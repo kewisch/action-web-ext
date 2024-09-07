@@ -52,5 +52,5 @@ inputs:
     description: "Filename template for the packed extension in the artifacts"
     required: false
 runs:
-  using: "node16"
+  using: "node20"
   main: "src/index.js"
