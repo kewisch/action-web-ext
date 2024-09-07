@@ -24,7 +24,7 @@ jobs:
 
       - name: "Bump version"
         run: |
-          export VERSION=1.${GITHUB_RUN_ID:0:4}.${GITHUB_RUN_ID:4} 
+          export VERSION="1.$((10#${GITHUB_RUN_ID:0:4})).$((10#${GITHUB_RUN_ID:4}))"
           jq ".version = \"$VERSION\"" test/extension/manifest.json > manifest.json~
           mv manifest.json~ test/extension/manifest.json
           git diff test/extension
