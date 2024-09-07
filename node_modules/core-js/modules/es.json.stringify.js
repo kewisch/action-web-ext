@@ -1,3 +1,4 @@
+'use strict';
 var $ = require('../internals/export');
 var getBuiltIn = require('../internals/get-built-in');
 var apply = require('../internals/function-apply');
@@ -23,13 +24,13 @@ var low = /^[\uD800-\uDBFF]$/;
 var hi = /^[\uDC00-\uDFFF]$/;
 
 var WRONG_SYMBOLS_CONVERSION = !NATIVE_SYMBOL || fails(function () {
-  var symbol = getBuiltIn('Symbol')();
+  var symbol = getBuiltIn('Symbol')('stringify detection');
   // MS Edge converts symbol values to JSON as {}
-  return $stringify([symbol]) != '[null]'
+  return $stringify([symbol]) !== '[null]'
     // WebKit converts symbol values to JSON as null
-    || $stringify({ a: symbol }) != '{}'
+    || $stringify({ a: symbol }) !== '{}'
     // V8 throws on boxed symbols
-    || $stringify(Object(symbol)) != '{}';
+    || $stringify(Object(symbol)) !== '{}';
 });
 
 // https://github.com/tc39/proposal-well-formed-stringify

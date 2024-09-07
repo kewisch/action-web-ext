@@ -6,18 +6,8 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: "Lint"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Run ESLint"
-        run: npx eslint src
-
   test:
-    name: "Test"
+    name: "Build and Test"
     runs-on: ubuntu-latest
     env:
       HAS_AMO_SIGN_KEY: ${{ secrets.AMO_SIGN_KEY != '' && secrets.AMO_SIGN_KEY != null }}
@@ -28,6 +18,9 @@ jobs:
 
       - name: "npm ci"
         run: npm ci
+
+      - name: "Run Linters"
+        run: npm run lint
 
       - name: "Bump version"
         run: |

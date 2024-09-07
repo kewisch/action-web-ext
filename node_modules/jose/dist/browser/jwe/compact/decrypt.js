@@ -14,9 +14,9 @@ export async function compactDecrypt(jwe, key, options) {
     }
     const decrypted = await flattenedDecrypt({
         ciphertext,
-        iv: (iv || undefined),
-        protected: protectedHeader || undefined,
-        tag: (tag || undefined),
+        iv: iv || undefined,
+        protected: protectedHeader,
+        tag: tag || undefined,
         encrypted_key: encryptedKey || undefined,
     }, key, options);
     const result = { plaintext: decrypted.plaintext, protectedHeader: decrypted.protectedHeader };

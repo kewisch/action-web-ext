@@ -147,8 +147,8 @@ describe("lib/utils", function () {
     var expected = 1;
 
     var promises = [
-      [[null, "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
-      [[null, "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"]
+      [[null, "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox"],
+      [[null, "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox"]
     ].map(function(fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -194,7 +194,7 @@ describe("lib/utils", function () {
     process.env.JPM_FIREFOX_BINARY = undefined;
     binary("/Application/FirefoxNightly.app", "darwin").then(function(actual) {
       expect(actual).to.be.equal(
-        path.join("/Application/FirefoxNightly.app/Contents/MacOS/firefox-bin"));
+        path.join("/Application/FirefoxNightly.app/Contents/MacOS/firefox"));
     }).then(done.bind(null, null), done);
   });
 
@@ -287,23 +287,23 @@ describe("lib/utils", function () {
     var expected = 1;
 
     var promises = [
-      [["firefox", "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
-      [["firefox", "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
+      [["firefox", "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox"],
+      [["firefox", "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox"],
 
-      [["beta", "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
-      [["beta", "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox-bin"],
+      [["beta", "darwin", "x86"], "/Applications/Firefox.app/Contents/MacOS/firefox"],
+      [["beta", "darwin", "x86_64"], "/Applications/Firefox.app/Contents/MacOS/firefox"],
 
-      [["firefoxdeveloperedition", "darwin", "x86"], "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox-bin"],
-      [["firefoxdeveloperedition", "darwin", "x86_64"], "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox-bin"],
+      [["firefoxdeveloperedition", "darwin", "x86"], "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox"],
+      [["firefoxdeveloperedition", "darwin", "x86_64"], "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox"],
 
-      [["deved", "darwin", "x86"], "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox-bin"],
-      [["deved", "darwin", "x86_64"], "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox-bin"],
+      [["deved", "darwin", "x86"], "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox"],
+      [["deved", "darwin", "x86_64"], "/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox"],
 
-      [["aurora", "darwin", "x86"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin"],
-      [["aurora", "darwin", "x86_64"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox-bin"],
+      [["aurora", "darwin", "x86"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox"],
+      [["aurora", "darwin", "x86_64"], "/Applications/FirefoxAurora.app/Contents/MacOS/firefox"],
 
-      [["nightly", "darwin", "x86"], "/Applications/Firefox Nightly.app/Contents/MacOS/firefox-bin"],
-      [["nightly", "darwin", "x86_64"], "/Applications/Firefox Nightly.app/Contents/MacOS/firefox-bin"]
+      [["nightly", "darwin", "x86"], "/Applications/Firefox Nightly.app/Contents/MacOS/firefox"],
+      [["nightly", "darwin", "x86_64"], "/Applications/Firefox Nightly.app/Contents/MacOS/firefox"]
     ].map(function (fixture) {
       var promise = binary.apply(binary, fixture[args]);
       return promise.then(function(actual) {
@@ -315,7 +315,7 @@ describe("lib/utils", function () {
 
   describe("findMacAppByChannel", function() {
 
-    var defaultNightly = "/Applications/Firefox Nightly.app/Contents/MacOS/firefox-bin";
+    var defaultNightly = "/Applications/Firefox Nightly.app/Contents/MacOS/firefox";
 
     function spawnSyncStub(stdout) {
       return function() {
@@ -338,7 +338,7 @@ describe("lib/utils", function () {
     it("prefers to find the default app", function() {
       var result = utils.findMacAppByChannel("nightly", {
         spawnSync: spawnSyncStub([
-          "/src/mozilla-central/Nightly.app/Contents/MacOS/firefox-bin",
+          "/src/mozilla-central/Nightly.app/Contents/MacOS/firefox",
           defaultNightly,
         ].join("\n")),
       });
@@ -346,7 +346,7 @@ describe("lib/utils", function () {
     });
 
     it("falls back to the first app result", function() {
-      var randomApp = "/src/mozilla-central/Nightly.app/Contents/MacOS/firefox-bin";
+      var randomApp = "/src/mozilla-central/Nightly.app/Contents/MacOS/firefox";
       var result = utils.findMacAppByChannel("nightly", {
         spawnSync: spawnSyncStub(randomApp + "\n"),
       });

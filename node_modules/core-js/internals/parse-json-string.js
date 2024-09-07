@@ -1,3 +1,4 @@
+'use strict';
 var uncurryThis = require('../internals/function-uncurry-this');
 var hasOwn = require('../internals/has-own-property');
 
@@ -28,28 +29,28 @@ module.exports = function (source, i) {
   var value = '';
   while (i < source.length) {
     var chr = at(source, i);
-    if (chr == '\\') {
+    if (chr === '\\') {
       var twoChars = slice(source, i, i + 2);
       if (hasOwn(codePoints, twoChars)) {
         value += codePoints[twoChars];
         i += 2;
-      } else if (twoChars == '\\u') {
+      } else if (twoChars === '\\u') {
         i += 2;
         var fourHexDigits = slice(source, i, i + 4);
-        if (!exec(IS_4_HEX_DIGITS, fourHexDigits)) throw $SyntaxError('Bad Unicode escape at: ' + i);
+        if (!exec(IS_4_HEX_DIGITS, fourHexDigits)) throw new $SyntaxError('Bad Unicode escape at: ' + i);
         value += fromCharCode($parseInt(fourHexDigits, 16));
         i += 4;
-      } else throw $SyntaxError('Unknown escape sequence: "' + twoChars + '"');
-    } else if (chr == '"') {
+      } else throw new $SyntaxError('Unknown escape sequence: "' + twoChars + '"');
+    } else if (chr === '"') {
       unterminated = false;
       i++;
       break;
     } else {
-      if (exec(IS_C0_CONTROL_CODE, chr)) throw $SyntaxError('Bad control character in string literal at: ' + i);
+      if (exec(IS_C0_CONTROL_CODE, chr)) throw new $SyntaxError('Bad control character in string literal at: ' + i);
       value += chr;
       i++;
     }
   }
-  if (unterminated) throw $SyntaxError('Unterminated string at: ' + i);
+  if (unterminated) throw new $SyntaxError('Unterminated string at: ' + i);
   return { value: value, end: i };
 };

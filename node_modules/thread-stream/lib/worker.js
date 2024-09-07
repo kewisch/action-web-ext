@@ -44,8 +44,10 @@ async function start () {
     if ((error.code === 'ENOTDIR' || error.code === 'ERR_MODULE_NOT_FOUND') &&
      filename.startsWith('file://')) {
       worker = realRequire(decodeURIComponent(filename.replace('file://', '')))
-    } else if (error.code === undefined) {
+    } else if (error.code === undefined || error.code === 'ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING') {
       // When bundled with pkg, an undefined error is thrown when called with realImport
+      // When bundled with pkg and using node v20, an ERR_VM_DYNAMIC_IMPORT_CALLBACK_MISSING error is thrown when called with realImport
+      // More info at: https://github.com/pinojs/thread-stream/issues/143
       worker = realRequire(decodeURIComponent(filename.replace(process.platform === 'win32' ? 'file:///' : 'file://', '')))
     } else {
       throw error
@@ -150,4 +152,20 @@ process.on('uncaughtException', function (err) {
     err
   })
   process.exit(1)
+})
+
+process.once('exit', exitCode => {
+  if (exitCode !== 0) {
+    process.exit(exitCode)
+    return
+  }
+
+  if (destination?.writableNeedDrain && !destination?.writableEnded) {
+    parentPort.postMessage({
+      code: 'WARNING',
+      err: new Error('ThreadStream: process exited before destination stream was drained. this may indicate that the destination stream try to write to a another missing stream')
+    })
+  }
+
+  process.exit(0)
 })
