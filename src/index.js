@@ -14,14 +14,27 @@ function mask(value) {
   return value;
 }
 
+function getJSONInput(name, options, defaultValue) {
+  let value = core.getInput(name, options);
+  if (!value && defaultValue !== undefined) {
+    return defaultValue;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    throw new Error(`Could not parse JSON value ${name}: ${e}`, { cause: e });
+  }
+}
+
 async function main() {
   let action = new WebExtAction({
     // Common options
     sourceDir: core.getInput("source", { required: true }),
     artifactsDir: core.getInput("artifacts"),
     channel: core.getInput("channel"),
-    verbose: core.getInput("verbose") == "true",
-    ignoreFiles: core.getInput("ignoreFiles"),
+    verbose: process.env.RUNNER_DEBUG || core.getInput("verbose") == "true",
+    ignoreFiles: getJSONInput("ignoreFiles", null, []),
 
     // Build options
     extensionFilenameTemplate: core.getInput("filename"),
@@ -30,6 +43,12 @@ async function main() {
     token: process.env.GITHUB_TOKEN,
 
     // Signing options
+    metaDataFile: core.getInput("metaDataFile"),
+    approvalNotes: core.getInput("approvalNotes"),
+    releaseNotes: core.getInput("releaseNotes"),
+    license: core.getInput("license"),
+    licenseFile: core.getInput("licenseFile"),
+    sourceCode: core.getInput("sourceCode"),
     apiKey: mask(core.getInput("apiKey")),
     apiSecret: mask(core.getInput("apiSecret")),
     apiUrlPrefix: core.getInput("apiUrlPrefix"),

@@ -1,3 +1,4 @@
+---
 name: "Build"
 on:
   push:
@@ -6,23 +7,22 @@ on:
   pull_request:
 
 jobs:
-  test:
-    name: "Build and Test"
+  build:
+    name: "Build"
     runs-on: ubuntu-latest
-    env:
-      HAS_AMO_SIGN_KEY: ${{ secrets.AMO_SIGN_KEY != '' && secrets.AMO_SIGN_KEY != null }}
-      HAS_ATN_SIGN_KEY: ${{ secrets.ATN_SIGN_KEY != '' && secrets.ATN_SIGN_KEY != null }}
+    outputs:
+      name: ${{ steps.web-ext-build.outputs.name }}
     steps:
       - name: "Checkout"
         uses: actions/checkout@v4
 
-      - name: "npm ci"
-        run: npm ci
-
-      - name: "Run Linters"
+      - name: "Code Lint"
         run: npm run lint
 
-      - name: "Bump version"
+      - name: "Yamllint"
+        run: yamllint -c .yamllint.yml .
+
+      - name: "Bump version with run id"
         run: |
           export VERSION="1.$((10#${GITHUB_RUN_ID:0:4})).$((10#${GITHUB_RUN_ID:4}))"
           jq ".version = \"$VERSION\"" test/extension/manifest.json > manifest.json~
@@ -49,38 +49,102 @@ jobs:
           source: test/extension
           channel: unlisted
 
-      - name: "Self-test: AMO release"
-        if: env.HAS_AMO_SIGN_KEY == 'true'
-        id: web-ext-sign-amo
-        uses: "./"
-        with:
-          cmd: sign
-          source: ${{ steps.web-ext-build.outputs.target }}
-          channel: unlisted
-          apiKey: ${{ secrets.AMO_SIGN_KEY }}
-          apiSecret: ${{ secrets.AMO_SIGN_SECRET }}
-
-      - name: "Self-test: ATN release"
-        if: env.HAS_ATN_SIGN_KEY == 'true'
-        id: web-ext-sign-atn
-        uses: "./"
-        with:
-          cmd: sign
-          source: ${{ steps.web-ext-build.outputs.target }}
-          channel: unlisted
-          apiUrlPrefix: "https://addons.thunderbird.net/api/v3"
-          apiKey: ${{ secrets.ATN_SIGN_KEY }}
-          apiSecret: ${{ secrets.ATN_SIGN_SECRET }}
-
-      - name: "Upload Unsigned"
+      - name: "Upload unsigned build"
         uses: actions/upload-artifact@v4
         with:
           name: unsigned.xpi
           path: ${{ steps.web-ext-build.outputs.target }}
+          if-no-files-found: error
+
+  amo:
+    name: "Self-test: AMO release"
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      HAS_SIGN_KEY: ${{ secrets.AMO_SIGN_KEY != '' && secrets.AMO_SIGN_SECRET != '' }}
+    steps:
+      - name: "Checkout"
+        if: env.HAS_SIGN_KEY
+        uses: actions/checkout@v4
+
+      - name: "Get release build"
+        if: env.HAS_SIGN_KEY
+        uses: actions/download-artifact@v4
+        with:
+          name: unsigned.xpi
+          path: web-ext-artifacts
+
+      - name: "Bump version with attempt id"
+        if: env.HAS_SIGN_KEY
+        working-directory: web-ext-artifacts
+        run: |
+          unzip -p ${{ needs.build.outputs.name }} manifest.json | \
+            jq ".version += \".$GITHUB_RUN_ATTEMPT\"" > manifest.json
+          zip -u ${{ needs.build.outputs.name }} manifest.json
+          rm manifest.json
+
+      - name: "Collect sources"
+        if: env.HAS_SIGN_KEY
+        run: git archive --format=zip --output=sources.zip HEAD
+
+      - name: "Release"
+        if: env.HAS_SIGN_KEY
+        id: web-ext-sign-amo
+        uses: "./"
+        with:
+          cmd: sign
+          source: web-ext-artifacts/${{ needs.build.outputs.name }}
+          sourceCode: sources.zip
+          channel: unlisted
+          metaDataFile: test/amo_metadata.json
+          approvalNotes: "Please find more information at https://github.com/kewisch/action-web-ext"
+          releaseNotes: "Triggered by ${{ github.event_name }} for ${{ github.sha }}"
+          license: MPL-2.0
+          apiKey: ${{ secrets.AMO_SIGN_KEY }}
+          apiSecret: ${{ secrets.AMO_SIGN_SECRET }}
 
       - name: "Upload AMO signed"
-        if: env.HAS_AMO_SIGN_KEY == 'true'
+        if: env.HAS_SIGN_KEY
         uses: actions/upload-artifact@v4
         with:
           name: amo-signed.xpi
           path: ${{ steps.web-ext-sign-amo.outputs.target }}
+          if-no-files-found: error
+
+  atn:
+    name: "Self-test: ATN release"
+    runs-on: ubuntu-latest
+    needs: build
+    env:
+      HAS_SIGN_KEY: ${{ secrets.ATN_SIGN_KEY != '' && secrets.ATN_SIGN_SECRET != '' }}
+    steps:
+      - name: "Checkout"
+        if: env.HAS_SIGN_KEY
+        uses: actions/checkout@v4
+
+      - name: "Get release build"
+        if: env.HAS_SIGN_KEY
+        uses: actions/download-artifact@v4
+        with:
+          name: unsigned.xpi
+          path: web-ext-artifacts
+
+      - name: "Bump version with attempt id"
+        if: env.HAS_SIGN_KEY
+        working-directory: web-ext-artifacts
+        run: |
+          unzip -p ${{ needs.build.outputs.name }} manifest.json | \
+            jq ".version += \".$GITHUB_RUN_ATTEMPT\"" > manifest.json
+          zip -u ${{ needs.build.outputs.name }} manifest.json
+          rm manifest.json
+
+      - name: "Self-test: ATN release"
+        if: env.HAS_SIGN_KEY
+        uses: "./"
+        with:
+          cmd: sign
+          source: web-ext-artifacts/${{ needs.build.outputs.name }}
+          channel: unlisted
+          apiUrlPrefix: "https://addons.thunderbird.net/api/v4"
+          apiKey: ${{ secrets.ATN_SIGN_KEY }}
+          apiSecret: ${{ secrets.ATN_SIGN_SECRET }}
