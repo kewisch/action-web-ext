@@ -1,37 +1,66 @@
-name: "web-ext Action for Firefox Add-ons"
-author: "Philipp Kewisch <mozilla@kewis.ch>"
-description: "Run a web-ext commmand"
+---
+name: web-ext Action for Firefox Add-ons
+author: Philipp Kewisch <mozilla@kewis.ch>
+description: Run a web-ext commmand
 branding:
-  icon: "box"
-  color: "gray-dark"
+  icon: box
+  color: gray-dark
 inputs:
   cmd:
-    description: "The web-ext command to run (lint, build, sign)"
+    description: The web-ext command to run (lint, build, sign)
     required: true
   source:
-    description: "The source xpi or path"
+    description: >
+      The xpi/zip of the add-on, or the path to its source code. For the sign command, this must be
+      a packaged add-on xpi/zip. For build and lint, this is typically the src/ path.
     required: false
-    default: "."
+    default: .
   artifacts:
-    description: "The path to put artifacts, e.g. from build or signing"
+    description: The path to put artifacts, e.g. from build or signing
     required: false
-    default: "web-ext-artifacts"
+    default: web-ext-artifacts
   verbose:
-    description: "More debugging fore certain steps"
+    description: >
+      More debugging for certain steps. Enabled automatically if runner debug logging is enabled.
     required: false
     default: false
-  progressBar:
-    description: "Show the progress bar in command output"
-    required: false
-    default: false
-  ignoreFiles:
-    description: "JSON array with files to ignore"
-    required: false
-    default: "[]"
   channel:
     description: "[lint+sign] The target channel"
     required: false
-    default: "unlisted"
+    default: unlisted
+  ignoreFiles:
+    description: "[lint+build] JSON array with files to ignore"
+    required: false
+    default: "[]"
+  filename:
+    description: "[build] Filename template for the packed extension in the artifacts"
+    required: false
+  metaDataFile:
+    description: >
+      [sign] A JSON file with metadata for the version release. See documentation for the
+      --amo-metadata param to web-ext sign at
+      https://extensionworkshop.com/documentation/develop/web-ext-command-reference/#web-ext-sign
+    required: false
+  approvalNotes:
+    description: "[sign] Shortcut to set .version.approval_notes in the submitted metadata"
+    required: false
+  releaseNotes:
+    description: "[sign] Shortcut to set .version.release_notes in the submitted metadata"
+    required: false
+  license:
+    description: >
+      [sign] The name of the license. This must be one of the identifiers from
+      https://mozilla.github.io/addons-server/topics/api/licenses.html#license-list
+      or a custom license name.
+    required: false
+  licenseFile:
+    description: >
+      [sign] If a custom license is used, this file is read as the custom
+      license text
+    required: false
+  sourceCode:
+    description: "[sign] Path to a zip file with the source code to upload"
+    required: false
   apiKey:
     description: "[sign] The API key used for signing"
     required: false
@@ -41,16 +70,13 @@ inputs:
   apiUrlPrefix:
     description: "[sign] The URL of the signing API, defaults to AMO production"
     required: false
-    default: "https://addons.mozilla.org/api/v4"
+    default: https://addons.mozilla.org/api/v5
   timeout:
     description: |
-      [sign] The number of milliseconds to wait before giving up on a response
-      from Mozilla's web service. Defaults to 900000 ms (15 minutes).
+      [sign] The number of milliseconds to wait before giving up on a response from Mozilla's web
+      service. Defaults to 900000 ms (15 minutes).
     required: false
     default: 900000
-  filename:
-    description: "Filename template for the packed extension in the artifacts"
-    required: false
 runs:
-  using: "node20"
-  main: "src/index.js"
+  using: node20
+  main: src/index.js

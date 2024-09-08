@@ -1,0 +1,11 @@
+---
+
+ignore: |
+  node_modules/
+
+extends: default
+rules:
+  line-length:
+    max: 120
+
+  truthy: disable

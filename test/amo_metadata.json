@@ -1,0 +1,25 @@
+{
+  "default_locale": "en-US",
+  "description": {
+    "en-US": "This add-on is being used to test https://github.com/kewisch/action-web-ext/"
+  },
+  "developer_comments": {
+    "en-US": "These are developer comments"
+  },
+  "homepage": {
+    "en-US": "https://github.com/kewisch/action-web-ext/"
+  },
+  "name": {
+    "en-US": "Borderify: Test for action-web-ext"
+  },
+  "requires_payment": false,
+  "summary": {
+    "en-US": "Adds a solid red border to all webpages matching mozilla.org"
+  },
+  "support_email": {
+    "en-US": "mozilla-extensions-action-web-ext@kewis.ch"
+  },
+  "version": {
+    "license": "MPL-2.0"
+  }
+}

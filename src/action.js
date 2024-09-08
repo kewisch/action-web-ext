@@ -6,43 +6,31 @@
 import path from "path";
 import fs from "fs";
 
+import JSZip from "jszip";
 import webExt from "web-ext";
 import { consoleStream } from "web-ext/util/logger";
-
-import { signAddon } from "sign-addon";
-import yauzl from "yauzl-promise";
-import getStream from "get-stream";
+import { signAddon as signAddonV5 } from "../node_modules/web-ext/lib/util/submit-addon.js";
+import { signAddon as signAddonV4 } from "sign-addon";
 
 import * as github from "@actions/github";
 import * as core from "@actions/core";
 
 import CheckRun from "./checkrun.js";
 
-async function getManifest(xpi) {
-  let stat = await fs.promises.lstat(xpi);
-  if (stat.isFile()) {
-    let zipFile = await yauzl.open(xpi);
-    let manifest;
+const KNOWN_LICENSES = new Set([
+  "all-rights-reserved", "MPL-2.0", "GPL-2.0-or-later", "GPL-3.0-or-later", "LGPL-2.1-or-later",
+  "LGPL-3.0-or-later", "MIT", "BSD-2-Clause"
+]);
 
-    try {
-      for await (let entry of zipFile) {
-        if (entry.filename == "manifest.json") {
-          let readStream = await entry.openReadStream();
-          manifest = JSON.parse(await getStream(readStream));
-          break;
-        }
-      }
-    } finally {
-      await zipFile.close();
-    }
-    return manifest;
-  } else if (stat.isDirectory()) {
-    let contents = await fs.promises.readFile(path.join(xpi, "manifest.json"), { encoding: "utf-8" });
-    return JSON.parse(contents);
-  } else {
-    console.error(stat);
-    let full = path.resolve(process.cwd(), xpi);
-    throw new Error("Don't know how to handle " + full);
+async function getManifest(xpi) {
+  try {
+    let data = await fs.promises.readFile(xpi);
+    let zip = await JSZip.loadAsync(data);
+
+    let manifest = await zip.file("manifest.json").async("string");
+    return JSON.parse(manifest);
+  } catch (e) {
+    throw new Error(`Could not parse manifest from ${xpi}: ${e}`, { cause: e });
   }
 }
 
@@ -62,7 +50,6 @@ export default class WebExtAction {
     }
     return runner.apply(this, args);
   }
-
 
   async cmd_lint() {
     function linterToAnnotation(message) {
@@ -91,7 +78,7 @@ export default class WebExtAction {
       artifactsDir: this.options.artifactsDir,
       selfHosted: this.options.channel == "unlisted",
       output: this.options.verbose ? "text" : "none",
-      ignoreFiles: JSON.parse(this.options.ignoreFiles),
+      ignoreFiles: this.options.ignoreFiles,
     }, {
       shouldExitProgram: false
     });
@@ -117,22 +104,26 @@ export default class WebExtAction {
     let results = await webExt.cmd.build({
       sourceDir: this.options.sourceDir,
       artifactsDir: this.options.artifactsDir,
-      filename: this.options.extensionFilenameTemplate ?
-        this.options.extensionFilenameTemplate : undefined,
+      filename: this.options.extensionFilenameTemplate || undefined,
       overwriteDest: true,
-      ignoreFiles: JSON.parse(this.options.ignoreFiles),
+      ignoreFiles: this.options.ignoreFiles,
     }, {
       showReadyMessage: false,
       shouldExitProgram: false
     });
 
     return {
-      target: results.extensionPath
+      target: results.extensionPath,
+      name: path.basename(results.extensionPath)
     };
   }
 
   async cmd_sign() {
-    // Doing signing directly so we can pass in a source xpi as well
+    let isFile = await fs.promises.stat(this.options.sourceDir).then(stats => stats.isFile(), e => false);
+    if (!isFile) {
+      throw new Error("You must pass the zip/xpi add-on file to the sign command");
+    }
+
     let manifest = await getManifest(this.options.sourceDir);
 
     let id;
@@ -142,28 +133,116 @@ export default class WebExtAction {
       try {
         id = manifest.applications.gecko.id;
       } catch (err) {
-        throw new Error("Must specify an add-on id in the manifest at browser_specific_settings.gecko.id");
+        // Ok to keep null in case it is missing
       }
     }
 
+    if (!id) {
+      throw new Error("Must specify an add-on id in the manifest at browser_specific_settings.gecko.id");
+    }
+
+    let metaDataJson = {};
+    if (this.options.metaDataFile) {
+      try {
+        metaDataJson = JSON.parse(await fs.promises.readFile(this.options.metaDataFile, { encoding: "utf-8" }));
+      } catch (e) {
+        throw new Error(`Could not parse metadata file ${this.options.metaDataFile}: ${e}`, { cause: e });
+      }
+    }
+
+    let defaultLocale = metaDataJson.default_locale || "en-US";
+
+    if (this.options.approvalNotes) {
+      metaDataJson.version ??= {};
+      metaDataJson.version.approval_notes = this.options.approvalNotes;
+    }
+    if (this.options.releaseNotes) {
+      metaDataJson.version ??= {};
+      metaDataJson.version.release_notes = {
+        [defaultLocale]: this.options.releaseNotes
+      };
+    }
+
+    if (this.options.license) {
+      if (KNOWN_LICENSES.has(this.options.license)) {
+        if (this.options.licenseFile) {
+          throw new Error(`License ${this.options.license} is a known license, you cannot pass a license file`);
+        }
+        metaDataJson.version.license = this.options.license;
+      } else {
+        if (!this.options.licenseFile) {
+          throw new Error(`License ${this.options.license} is not a known license, you need to pass the licenseFile option`);
+        }
+        metaDataJson.version.custom_license = {
+          name: {
+            [defaultLocale]: this.options.license
+          },
+          text: {
+            [defaultLocale]: await fs.promises.readFile(this.options.licenseFile, { encoding: "utf-8" })
+          }
+        };
+      }
+    }
+
+    let tmpdir = await fs.promises.mkdtemp(path.join(process.env.RUNNER_TEMP, "action-web-ext-"));
+
     console.log(`Signing ${manifest.name} ${manifest.version}...`);
+
+    if (this.options.verbose) {
+      console.log("Passing the following metadata:", JSON.stringify(metaDataJson, null, 2));
+    }
 
     let result;
     try {
-      result = await signAddon({
-        xpiPath: this.options.sourceDir,
-        channel: this.options.channel,
-        id: id,
-        version: manifest.version,
-        downloadDir: this.options.artifactsDir,
-        apiKey: this.options.apiKey,
-        apiSecret: this.options.apiSecret,
-        apiUrlPrefix: this.options.apiUrlPrefix,
-        timeout: this.options.timeout,
-        verbose: this.options.verbose,
-        disableProgressBar: !this.options.progressBar,
-        ignoreFiles: JSON.parse(this.options.ignoreFiles)
-      });
+      if (this.options.apiUrlPrefix.includes("v5")) {
+        result = await signAddonV5({
+          apiKey: this.options.apiKey,
+          apiSecret: this.options.apiSecret,
+          amoBaseUrl: this.options.apiUrlPrefix,
+          validationCheckTimeout: this.options.timeout,
+          approvalCheckTimeout: this.options.timeout,
+          id: id,
+          xpiPath: this.options.sourceDir,
+          downloadDir: this.options.artifactsDir,
+          channel: this.options.channel,
+          savedUploadUuidPath: path.join(tmpdir, ".amo-upload-uuid"),
+          metaDataJson: metaDataJson,
+          submissionSource: this.options.sourceCode,
+          userAgentString: "kewisch/action-web-ext",
+        });
+      } else if (this.options.apiUrlPrefix.includes("v4")) {
+        if (this.options.approvalNotes) {
+          throw new Error("Approval notes cannot be submitted in API v4");
+        }
+        if (this.options.releaseNotes) {
+          throw new Error("Release notes cannot be submitted in API v4");
+        }
+        if (this.options.metaDataFile) {
+          throw new Error("Metadata cannot be submitted in API v4");
+        }
+        if (this.options.sourceCode) {
+          throw new Error("Source code cannot be submitted in API v4");
+        }
+        if (this.options.license || this.options.licenseFile) {
+          throw new Error("License cannot bet set in API v4");
+        }
+
+        result = await signAddonV4({
+          xpiPath: this.options.sourceDir,
+          id: id,
+          version: manifest.version,
+          apiKey: this.options.apiKey,
+          apiSecret: this.options.apiSecret,
+          apiUrlPrefix: this.options.apiUrlPrefix,
+          verbose: this.options.verbose,
+          channel: this.options.channel,
+          timeout: this.options.timeout,
+          downloadDir: this.options.artifactsDir,
+          disableProgressBar: true,
+        });
+      } else {
+        throw new Error("Only API v5 and v4 are supported, you provided " + this.options.apiUrlPrefix);
+      }
     } catch (e) {
       if (
         e.message.includes("The XPI was processed but no signed files were found") &&
@@ -176,19 +255,35 @@ export default class WebExtAction {
       }
     }
 
-    if (result.success) {
+    let uploadUuid;
+    try {
+      uploadUuid = JSON.parse(await fs.promises.readFile(path.join(tmpdir, ".amo-upload-uuid"), { encoding: "utf-8" }));
+    } catch (e) {
+      console.warn("Could not parse amo-upload-uuid file:", e);
+    }
+
+    if (result.downloadedFiles) {
       console.log("Downloaded these files: " + result.downloadedFiles);
       return {
         addon_id: result.id,
-        target: result.downloadedFiles[0]
+        target: path.join(this.options.artifactsDir, result.downloadedFiles[0]),
+        name: result.downloadedFiles[0],
+        upload: uploadUuid?.uploadUuid,
+        channel: uploadUuid?.channel,
+        crcHash: uploadUuid?.xpiCrcHash
       };
     } else if (result.errorCode == "ADDON_NOT_AUTO_SIGNED") {
       core.warning("The add-on passed validation, but was not auto-signed (listed, or held for manual review)");
       return {
         addon_id: result.id,
-        target: null
+        target: null,
+        name: null,
+        upload: uploadUuid?.uploadUuid,
+        channel: uploadUuid?.channel,
+        crcHash: uploadUuid?.xpiCrcHash
       };
     } else {
+      console.error(result);
       throw new Error(`The signing process has failed (${result.errorCode}): ${result.errorDetails}`);
     }
   }
