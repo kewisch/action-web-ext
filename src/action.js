@@ -188,6 +188,7 @@ export default class WebExtAction {
     }
 
     let result;
+    let uploadUuid;
     try {
       if (this.options.apiUrlPrefix.includes("v5")) {
         result = await signAddonV5({
@@ -205,6 +206,12 @@ export default class WebExtAction {
           submissionSource: this.options.sourceCode,
           userAgentString: "kewisch/action-web-ext",
         });
+
+        try {
+          uploadUuid = JSON.parse(await fs.promises.readFile(path.join(tmpdir, ".amo-upload-uuid"), { encoding: "utf-8" }));
+        } catch (e) {
+          console.warn("Could not parse amo-upload-uuid file:", e);
+        }
       } else if (this.options.apiUrlPrefix.includes("v4")) {
         if (this.options.approvalNotes) {
           throw new Error("Approval notes cannot be submitted in API v4");
@@ -248,13 +255,6 @@ export default class WebExtAction {
       } else {
         throw e;
       }
-    }
-
-    let uploadUuid;
-    try {
-      uploadUuid = JSON.parse(await fs.promises.readFile(path.join(tmpdir, ".amo-upload-uuid"), { encoding: "utf-8" }));
-    } catch (e) {
-      console.warn("Could not parse amo-upload-uuid file:", e);
     }
 
     if (result.downloadedFiles) {
