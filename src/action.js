@@ -15,8 +15,6 @@ import { signAddon as signAddonV4 } from "sign-addon";
 import * as github from "@actions/github";
 import * as core from "@actions/core";
 
-import CheckRun from "./checkrun.js";
-
 const KNOWN_LICENSES = new Set([
   "all-rights-reserved", "MPL-2.0", "GPL-2.0-or-later", "GPL-3.0-or-later", "LGPL-2.1-or-later",
   "LGPL-3.0-or-later", "MIT", "BSD-2-Clause"
@@ -52,26 +50,19 @@ export default class WebExtAction {
   }
 
   async cmd_lint() {
-    function linterToAnnotation(message) {
-      let level = message._type == "error" ? "failure" : message._type;
+    function linterToAnnotationProperty(data) {
       return {
-        path: message.file || "none",
-        start_line: message.line || 1,
-        end_line: message.line || 1,
-        start_column: message.column,
-        end_column: message.column,
-        annotation_level: level,
-        message: message.description,
-        title: message.message
+        title: data.message,
+        file: data.file,
+        startLine: data.line || 1,
+        startColumn: data.column
       };
     }
+
     function linterToString(message) {
       let prefix = message._type[0].toUpperCase() + message._type.substr(1);
       return `${prefix}: ${message.file}${":" + (message.line || "")} - ${message.message}`;
     }
-
-    let check = new CheckRun("web-ext lint", github.context, this.options.token);
-    await check.create();
 
     let results = await webExt.cmd.lint({
       sourceDir: this.options.sourceDir,
@@ -83,20 +74,24 @@ export default class WebExtAction {
       shouldExitProgram: false
     });
 
-    let nonfatal = results.notices.concat(results.warnings).map(linterToAnnotation);
-    let fatal = results.errors.map(linterToAnnotation);
+    let annotations = results.errors.concat(results.warnings).concat(results.notices);
+
+    if (annotations.length > 10) {
+      core[annotations[9]._type]("Only the first 9 linting messages are shown, please fix them first");
+      console.log(annotations.map(linterToString).join("\n") + "\n");
+      annotations.splice(9);
+    }
+
+    for (let message of annotations) {
+      core[message._type](message.description, linterToAnnotationProperty(message));
+    }
+
     let summary = results.summary;
     let summaryLine = `${summary.errors} Errors, ${summary.warnings} Warnings, ${summary.notices} Notices`;
-
-    await check.complete(summaryLine, nonfatal, fatal);
-
-    if (!check.ready) {
-      console.log(results.notices.concat(results.warnings).concat(results.errors).map(linterToString).join("\n") + "\n");
-    }
-    console.log(summaryLine);
-
-    if (fatal.length) {
+    if (results.errors.length) {
       throw new Error(summaryLine);
+    } else {
+      console.log(summaryLine);
     }
   }
 
