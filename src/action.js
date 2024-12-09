@@ -16,10 +16,9 @@ import * as github from "@actions/github";
 import * as core from "@actions/core";
 
 const KNOWN_LICENSES = new Set([
-  "all-rights-reserved", "MPL-2.0", "GPL-2.0-or-later", "GPL-3.0-or-later", "LGPL-2.1-or-later",
-  "LGPL-3.0-or-later", "MIT", "BSD-2-Clause"
+  "all-rights-reserved", "MPL-2.0", "Apache-2.0", "GPL-2.0-only", "GPL-3.0-only", "LGPL-2.1-only",
+  "LGPL-3.0-only", "AGPL-3.0-only", "MIT", "ISC", "BSD-2-Clause", "Unlicense"
 ]);
-
 async function getManifest(xpi) {
   try {
     let data = await fs.promises.readFile(xpi);
