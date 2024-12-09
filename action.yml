@@ -1,6 +1,6 @@
 ---
-name: web-ext Action for Firefox Add-ons
-author: Philipp Kewisch <mozilla@kewis.ch>
+name: "web-ext Action for Firefox Add-ons (phuwit's fork)"
+author: Phuwit Puthipairoj <26784267+phuwit@users.noreply.github.com>
 description: Run a web-ext commmand
 branding:
   icon: box
