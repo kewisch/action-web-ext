@@ -27,11 +27,11 @@ declare namespace processWarning {
     createDeprecation(params: DeprecationOptions): WarningItem;
   }
 
-  export function createWarning(params: WarningOptions): WarningItem;
-  export function createDeprecation(params: DeprecationOptions): WarningItem;
+  export function createWarning (params: WarningOptions): WarningItem
+  export function createDeprecation (params: DeprecationOptions): WarningItem
 
-  const processWarning: ProcessWarning;
-  export { processWarning as default };
+  const processWarning: ProcessWarning
+  export { processWarning as default }
 }
 
-export = processWarning;
+export = processWarning

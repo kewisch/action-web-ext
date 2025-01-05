@@ -17,7 +17,7 @@ export { EncryptJWT } from './jwt/encrypt.js';
 export { calculateJwkThumbprint, calculateJwkThumbprintUri } from './jwk/thumbprint.js';
 export { EmbeddedJWK } from './jwk/embedded.js';
 export { createLocalJWKSet } from './jwks/local.js';
-export { createRemoteJWKSet } from './jwks/remote.js';
+export { createRemoteJWKSet, jwksCache, experimental_jwksCache } from './jwks/remote.js';
 export { UnsecuredJWT } from './jwt/unsecured.js';
 export { exportPKCS8, exportSPKI, exportJWK } from './key/export.js';
 export { importSPKI, importPKCS8, importX509, importJWK } from './key/import.js';

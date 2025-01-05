@@ -3,6 +3,7 @@ import * as ECDH from '../runtime/ecdhes.js';
 import { encrypt as pbes2Kw } from '../runtime/pbes2kw.js';
 import { encrypt as rsaEs } from '../runtime/rsaes.js';
 import { encode as base64url } from '../runtime/base64url.js';
+import normalize from '../runtime/normalize_key.js';
 import generateCek, { bitLength as cekLength } from '../lib/cek.js';
 import { JOSENotSupported } from '../util/errors.js';
 import { exportJWK } from '../key/export.js';
@@ -13,6 +14,7 @@ async function encryptKeyManagement(alg, enc, key, providedCek, providedParamete
     let parameters;
     let cek;
     checkKeyType(alg, key, 'encrypt');
+    key = (await normalize.normalizePublicKey?.(key, alg)) || key;
     switch (alg) {
         case 'dir': {
             cek = key;

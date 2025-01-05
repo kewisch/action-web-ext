@@ -1,6 +1,6 @@
 {
   "name": "registry-auth-token",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "Get the auth token set for an npm registry (if any)",
   "main": "index.js",
   "scripts": {

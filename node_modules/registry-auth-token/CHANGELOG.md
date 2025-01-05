@@ -2,6 +2,12 @@
 
 All notable changes will be documented in this file.
 
+## [5.0.3] - 2024-11-27
+
+### Changes
+
+- Make all arguments optional in type definitions (Mattias Leino)
+
 ## [5.0.2] - 2023-03-05
 
 ### Changes

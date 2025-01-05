@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Test</title>
+  </head>
+  <body>
+    <script type="module">
+      //TODO: This module should really be tested better than this
+      // import whenExit from '../dist/browser/index.js';
+      const whenExit = (()=>{var t=class{constructor(){this.callbacks=new Set;this.exit=()=>{for(let e of this.callbacks)e()};this.hook=()=>{window.addEventListener("beforeunload",this.exit)};this.register=e=>(this.callbacks.add(e),()=>{this.callbacks.delete(e)});this.hook()}},o=new t;var s=o.register;return s;})();
+
+      const unload_1 = localStorage.getItem ( 'unload_1' );
+      const unload_2 = localStorage.getItem ( 'unload_2' );
+      const unload_3 = localStorage.getItem ( 'unload_3' );
+      console.log ({ unload_1, unload_2, unload_3 });
+      localStorage.removeItem ( 'unload_1' );
+      localStorage.removeItem ( 'unload_2' );
+      localStorage.removeItem ( 'unload_3' );
+      whenExit ( () => {
+        localStorage.setItem ( 'unload_1', 'true' );
+      });
+      whenExit ( () => {
+        localStorage.setItem ( 'unload_2', 'true' );
+      });
+      const disposer = whenExit ( () => {
+        localStorage.setItem ( 'unload_3', 'true' );
+      });
+      disposer ();
+    </script>
+  </body>
+</html>

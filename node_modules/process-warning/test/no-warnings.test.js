@@ -1,8 +1,8 @@
 'use strict'
 
 const { test } = require('tap')
-const { spawnSync } = require('child_process')
-const { resolve } = require('path')
+const { spawnSync } = require('node:child_process')
+const { resolve } = require('node:path')
 
 const entry = resolve(__dirname, '../examples', 'example.js')
 

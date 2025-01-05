@@ -3,6 +3,7 @@ import * as ECDH from '../runtime/ecdhes.js';
 import { decrypt as pbes2Kw } from '../runtime/pbes2kw.js';
 import { decrypt as rsaEs } from '../runtime/rsaes.js';
 import { decode as base64url } from '../runtime/base64url.js';
+import normalize from '../runtime/normalize_key.js';
 import { JOSENotSupported, JWEInvalid } from '../util/errors.js';
 import { bitLength as cekLength } from '../lib/cek.js';
 import { importJWK } from '../key/import.js';
@@ -11,6 +12,7 @@ import isObject from './is_object.js';
 import { unwrap as aesGcmKw } from './aesgcmkw.js';
 async function decryptKeyManagement(alg, key, encryptedKey, joseHeader, options) {
     checkKeyType(alg, key, 'decrypt');
+    key = (await normalize.normalizePrivateKey?.(key, alg)) || key;
     switch (alg) {
         case 'dir': {
             if (encryptedKey !== undefined)

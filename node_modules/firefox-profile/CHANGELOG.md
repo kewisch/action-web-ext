@@ -1,3 +1,7 @@
+# 4.7.0
+
+dump dependencies, add GHA. Thank you @frigante.
+
 # 4.6.0
 
 - Linux: add support for snap, flatpak and XDG_CONFIG_HOME firefox directory

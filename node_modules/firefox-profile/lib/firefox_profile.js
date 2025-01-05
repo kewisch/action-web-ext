@@ -266,15 +266,11 @@ FirefoxProfile.prototype.deleteDir = function (cb) {
   process.removeListener('exit', self.onExit);
   process.removeListener('SIGINT', self.onSigInt);
   this.shouldDeleteOnExit(false);
-  fs.exists(this.profileDir, function (doesExists) {
-    if (!doesExists) {
-      cb && cb();
-      return;
-    }
-    fs.remove(self.profileDir, function () {
-      cb && cb();
-    });
-  });
+  if (fs.existsSync(this.profileDir)) {
+    fs.removeSync(this.profileDir);
+  }
+
+  cb && cb();
 };
 
 /**
@@ -610,7 +606,7 @@ FirefoxProfile.prototype._installExtension = function (addon, cb) {
       }
 
       if (tmpDir) {
-        await fs.remove(tmpDir);
+        fs.removeSync(tmpDir);
       }
 
       return addonDetails;

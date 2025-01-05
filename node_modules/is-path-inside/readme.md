@@ -2,18 +2,16 @@
 
 > Check if a path is inside another path
 
-
 ## Install
 
 ```
 $ npm install is-path-inside
 ```
 
-
 ## Usage
 
 ```js
-const isPathInside = require('is-path-inside');
+import isPathInside from 'is-path-inside';
 
 isPathInside('a/b/c', 'a/b');
 //=> true
@@ -27,7 +25,6 @@ isPathInside('a/b/c', 'a/b/c');
 isPathInside('/Users/sindresorhus/dev/unicorn', '/Users/sindresorhus');
 //=> true
 ```
-
 
 ## API
 
@@ -48,7 +45,6 @@ The path that should be inside `parentPath`.
 Type: `string`
 
 The path that should contain `childPath`.
-
 
 ---
 

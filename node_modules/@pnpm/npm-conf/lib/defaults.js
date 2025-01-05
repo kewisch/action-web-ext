@@ -26,7 +26,7 @@ if (home) {
 }
 
 const cacheExtra = process.platform === 'win32' ? 'npm-cache' : '.npm';
-const cacheRoot = process.platform === 'win32' ? process.env.APPDATA : home;
+const cacheRoot = process.platform === 'win32' && process.env.APPDATA || home;
 const cache = path.resolve(cacheRoot, cacheExtra);
 
 let defaults;

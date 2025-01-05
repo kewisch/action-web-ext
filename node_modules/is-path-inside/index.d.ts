@@ -7,7 +7,7 @@ _Important:_ This package is meant for use with path manipulation. It does not c
 
 @example
 ```
-import isPathInside = require('is-path-inside');
+import isPathInside from 'is-path-inside';
 
 isPathInside('a/b/c', 'a/b');
 //=> true
@@ -22,6 +22,4 @@ isPathInside('/Users/sindresorhus/dev/unicorn', '/Users/sindresorhus');
 //=> true
 ```
 */
-declare function isPathInside(childPath: string, parentPath: string): boolean;
-
-export = isPathInside;
+export default function isPathInside(childPath: string, parentPath: string): boolean;
