@@ -73,10 +73,18 @@ inputs:
     default: https://addons.mozilla.org/api/v5
   timeout:
     description: |
-      [sign] The number of milliseconds to wait before giving up on a response from Mozilla's web
-      service. Defaults to 900000 ms (15 minutes).
+      [sign] The number of milliseconds to wait for upload and validation to complete before
+      giving up. Also used as the default for `approvalTimeout` when it is not set.
+      Defaults to 900000 ms (15 minutes).
     required: false
     default: 900000
+  approvalTimeout:
+    description: |
+      [sign] The number of milliseconds to wait for AMO to approve the submission and return
+      the signed XPI. Set to 0 to skip waiting entirely: the action succeeds as soon as
+      upload and validation succeed, and no signed XPI is downloaded (the `target` and
+      `name` outputs will be null). When unset, falls back to `timeout`. AMO API v5 only.
+    required: false
 runs:
   using: node24
   main: src/index.js
