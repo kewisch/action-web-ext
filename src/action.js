@@ -190,12 +190,20 @@ export default class WebExtAction {
     let uploadUuid;
     try {
       if (this.options.apiUrlPrefix.includes("v5")) {
+        // `approvalTimeout` (milliseconds) falls back to `timeout` when unset. A value of 0
+        // disables waiting for AMO approval and skips downloading the signed XPI; see the
+        // success branch below for the corresponding result handling.
+        let approvalCheckTimeout = this.options.timeout;
+        if (this.options.approvalTimeout !== "" && this.options.approvalTimeout != null) {
+          approvalCheckTimeout = Number(this.options.approvalTimeout);
+        }
+
         result = await signAddonV5({
           apiKey: this.options.apiKey,
           apiSecret: this.options.apiSecret,
           amoBaseUrl: this.options.apiUrlPrefix,
           validationCheckTimeout: this.options.timeout,
-          approvalCheckTimeout: this.options.timeout,
+          approvalCheckTimeout: approvalCheckTimeout,
           id: id,
           xpiPath: this.options.sourceDir,
           downloadDir: this.options.artifactsDir,
@@ -268,6 +276,19 @@ export default class WebExtAction {
       };
     } else if (result.errorCode == "ADDON_NOT_AUTO_SIGNED") {
       core.warning("The add-on passed validation, but was not auto-signed (listed, or held for manual review)");
+      return {
+        addon_id: result.id,
+        target: null,
+        name: null,
+        upload: uploadUuid?.uploadUuid,
+        channel: uploadUuid?.channel,
+        crcHash: uploadUuid?.xpiCrcHash
+      };
+    } else if (Number(this.options.approvalTimeout) === 0 && !result.errorCode) {
+      // approvalTimeout=0 tells web-ext's signAddon to return as soon as upload and
+      // validation succeed, without polling for approval or downloading a signed XPI.
+      // The result carries an id but no downloadedFiles and no errorCode; treat as success.
+      core.info("Submitted to AMO. Skipped waiting for approval and signed XPI (approvalTimeout=0).");
       return {
         addon_id: result.id,
         target: null,

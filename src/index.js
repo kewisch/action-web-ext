@@ -53,6 +53,7 @@ async function main() {
     apiSecret: mask(core.getInput("apiSecret")),
     apiUrlPrefix: core.getInput("apiUrlPrefix"),
     timeout: core.getInput("timeout"),
+    approvalTimeout: core.getInput("approvalTimeout"),
   });
 
 

@@ -107,8 +107,12 @@ You can use the following extra options:
 * `apiKey`: The API key used for signing.
 * `apiSecret`: The API secret used for signing.
 * `apiUrlPrefix`: The URL of the signing API, defaults to AMO production.
-* `timeout`: The number of milliseconds to wait before giving up on a response from Mozilla's web
-   service. Defaults to 900000 ms (15 minutes).
+* `timeout`: The number of milliseconds to wait for upload and validation to complete before
+   giving up. Defaults to 900000 ms (15 minutes).
+* `approvalTimeout`: The number of milliseconds to wait for AMO to approve the submission and
+   return the signed XPI. Set to `0` to skip waiting entirely: the action succeeds as soon as
+   upload and validation succeed, and no signed XPI is downloaded (the `target` and `name`
+   outputs will be `null`). AMO API v5 only.
 
 Changing `apiUrlPrefix` to https://addons.thunderbird.net/api/v4 will allow you to submit to
 [addons.thunderbird.net](https://addons.thunderbird.net), or you can make use of the
