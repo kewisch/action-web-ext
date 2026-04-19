@@ -40,7 +40,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "web-ext lint"
-        uses: kewisch/action-web-ext@v1
+        uses: kewisch/action-web-ext@v2
         with:
           cmd: lint
           source: src
@@ -74,7 +74,7 @@ jobs:
 
       - name: "web-ext build"
         id: web-ext-build
-        uses: kewisch/action-web-ext@v1
+        uses: kewisch/action-web-ext@v2
         with:
           cmd: build
           source: src
@@ -142,7 +142,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "web-ext lint"
-        uses: kewisch/action-web-ext@v1
+        uses: kewisch/action-web-ext@v2
         with:
           cmd: lint
           source: src
@@ -150,7 +150,7 @@ jobs:
 
       - name: "web-ext build"
         id: web-ext-build
-        uses: kewisch/action-web-ext@v1
+        uses: kewisch/action-web-ext@v2
         with:
           cmd: build
           source: src
@@ -164,7 +164,7 @@ jobs:
 
       - name: "web-ext sign AMO"
         id: web-ext-sign
-        uses: kewisch/action-web-ext@v1
+        uses: kewisch/action-web-ext@v2
         with:
           cmd: sign
 
@@ -199,7 +199,7 @@ jobs:
 
       - name: "web-ext sign ATN"
         id: web-ext-sign
-        uses: kewisch/action-web-ext@v1
+        uses: kewisch/action-web-ext@v2
         with:
           # This is how to sign for Thunderbird. Note that Thunderbird uses API v4, where many
           # metadata fields are not supported.
