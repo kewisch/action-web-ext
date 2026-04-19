@@ -1,3 +1,5 @@
+import type {IfNever} from './if-never';
+
 /**
 Extract the keys from a type where the value type of the key extends the given `Condition`.
 
@@ -30,18 +32,16 @@ type StringKeysAndUndefined = ConditionalKeys<Example, string | undefined>;
 
 @category Object
 */
-export type ConditionalKeys<Base, Condition> = NonNullable<
-// Wrap in `NonNullable` to strip away the `undefined` type from the produced union.
+export type ConditionalKeys<Base, Condition> =
 {
 	// Map through all the keys of the given base type.
-	[Key in keyof Base]:
+	[Key in keyof Base]-?:
 	// Pick only keys with types extending the given `Condition` type.
 	Base[Key] extends Condition
-	// Retain this key since the condition passes.
-		? Key
+	// Retain this key
+	// If the value for the key extends never, only include it if `Condition` also extends never
+		? IfNever<Base[Key], IfNever<Condition, Key, never>, Key>
 	// Discard this key since the condition fails.
 		: never;
-
 	// Convert the produced object into a union type of the keys which passed the conditional test.
-}[keyof Base]
->;
+}[keyof Base];

@@ -191,9 +191,10 @@ export class Parser {
         }
     }
     _setContextModes(current, tid) {
-        const isHTML = current === this.document || this.treeAdapter.getNamespaceURI(current) === NS.HTML;
+        const isHTML = current === this.document || (current && this.treeAdapter.getNamespaceURI(current) === NS.HTML);
         this.currentNotInHTML = !isHTML;
-        this.tokenizer.inForeignNode = !isHTML && !this._isIntegrationPoint(tid, current);
+        this.tokenizer.inForeignNode =
+            !isHTML && current !== undefined && tid !== undefined && !this._isIntegrationPoint(tid, current);
     }
     /** @protected */
     _switchToTextParsing(currentToken, nextTokenizerState) {
@@ -285,7 +286,7 @@ export class Parser {
         }
         else {
             const parent = this.openElements.currentTmplContentOrNode;
-            this.treeAdapter.appendChild(parent, element);
+            this.treeAdapter.appendChild(parent !== null && parent !== void 0 ? parent : this.document, element);
         }
     }
     /**
@@ -422,6 +423,7 @@ export class Parser {
             // If it _is_ an integration point, then we might have to check that it is not an HTML
             // integration point.
             ((token.tagID === $.MGLYPH || token.tagID === $.MALIGNMARK) &&
+                currentTagId !== undefined &&
                 !this._isIntegrationPoint(currentTagId, current, NS.HTML)));
     }
     /** @protected */
@@ -474,7 +476,7 @@ export class Parser {
         const listLength = this.activeFormattingElements.entries.length;
         if (listLength) {
             const endIndex = this.activeFormattingElements.entries.findIndex((entry) => entry.type === EntryType.Marker || this.openElements.contains(entry.element));
-            const unopenIdx = endIndex < 0 ? listLength - 1 : endIndex - 1;
+            const unopenIdx = endIndex === -1 ? listLength - 1 : endIndex - 1;
             for (let i = unopenIdx; i >= 0; i--) {
                 const entry = this.activeFormattingElements.entries[i];
                 this._insertElement(entry.token, this.treeAdapter.getNamespaceURI(entry.element));
@@ -585,7 +587,9 @@ export class Parser {
     }
     /** @protected */
     _shouldFosterParentOnInsertion() {
-        return this.fosterParentingEnabled && this._isElementCausesFosterParenting(this.openElements.currentTagId);
+        return (this.fosterParentingEnabled &&
+            this.openElements.currentTagId !== undefined &&
+            this._isElementCausesFosterParenting(this.openElements.currentTagId));
     }
     /** @protected */
     _findFosterParentingLocation() {
@@ -1204,7 +1208,7 @@ function aaObtainFurthestBlock(p, formattingElementEntry) {
         }
     }
     if (!furthestBlock) {
-        p.openElements.shortenToLength(idx < 0 ? 0 : idx);
+        p.openElements.shortenToLength(Math.max(idx, 0));
         p.activeFormattingElements.removeEntry(formattingElementEntry);
     }
     return furthestBlock;
@@ -1690,7 +1694,7 @@ function numberedHeaderStartTagInBody(p, token) {
     if (p.openElements.hasInButtonScope($.P)) {
         p._closePElement();
     }
-    if (NUMBERED_HEADERS.has(p.openElements.currentTagId)) {
+    if (p.openElements.currentTagId !== undefined && NUMBERED_HEADERS.has(p.openElements.currentTagId)) {
         p.openElements.pop();
     }
     p._insertElement(token, NS.HTML);
@@ -2363,7 +2367,7 @@ function eofInText(p, token) {
 // The "in table" insertion mode
 //------------------------------------------------------------------
 function characterInTable(p, token) {
-    if (TABLE_STRUCTURE_TAGS.has(p.openElements.currentTagId)) {
+    if (p.openElements.currentTagId !== undefined && TABLE_STRUCTURE_TAGS.has(p.openElements.currentTagId)) {
         p.pendingCharacterTokens.length = 0;
         p.hasNonWhitespacePendingCharacterToken = false;
         p.originalInsertionMode = p.insertionMode;
@@ -3188,6 +3192,7 @@ function characterInForeignContent(p, token) {
 }
 function popUntilHtmlOrIntegrationPoint(p) {
     while (p.treeAdapter.getNamespaceURI(p.openElements.current) !== NS.HTML &&
+        p.openElements.currentTagId !== undefined &&
         !p._isIntegrationPoint(p.openElements.currentTagId, p.openElements.current)) {
         p.openElements.pop();
     }

@@ -1,10 +1,13 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const { createWarning } = require('../')
+const { withResolvers } = require('./promise')
 
 test('emit should set the emitted state', t => {
   t.plan(3)
+
+  const { promise, resolve } = withResolvers()
 
   process.on('warning', onWarning)
   function onWarning () {
@@ -16,15 +19,17 @@ test('emit should set the emitted state', t => {
     code: 'CODE',
     message: 'Hello world'
   })
-  t.notOk(warn.emitted)
+  t.assert.ok(!warn.emitted)
   warn.emitted = true
-  t.ok(warn.emitted)
+  t.assert.ok(warn.emitted)
 
   warn()
-  t.ok(warn.emitted)
+  t.assert.ok(warn.emitted)
 
   setImmediate(() => {
     process.removeListener('warning', onWarning)
-    t.end()
+    resolve()
   })
+
+  return promise
 })

@@ -84,6 +84,9 @@ Note that it waits for the app to exit, not just for the window to close.
 
 On Windows, you have to explicitly specify an app for it to be able to wait.
 
+> [!WARNING]
+> When opening URLs in browsers while the browser is already running, the `wait` option will not work as expected. Browsers use a single-instance architecture where new URLs are passed to the existing process, causing the command to exit immediately. Use the `newInstance` option on macOS to force a new browser instance, or avoid using `wait` with browsers.
+
 ##### background <sup>(macOS only)</sup>
 
 Type: `boolean`\
@@ -171,12 +174,24 @@ await open('https://google.com', {
 - [`chrome`](https://www.google.com/chrome) - Web browser
 - [`firefox`](https://www.mozilla.org/firefox) - Web browser
 - [`edge`](https://www.microsoft.com/edge) - Web browser
+- [`brave`](https://brave.com/) - Web browser
 - `browser` - Default web browser
 - `browserPrivate` - Default web browser in incognito mode
 
-`browser` and `browserPrivate` only supports `chrome`, `firefox`, and `edge`.
+`browser` and `browserPrivate` only supports `chrome`, `firefox`, `edge`, and `brave`.
+
+## WSL (Windows Subsystem for Linux)
+
+The package automatically uses Windows integration (PowerShell) when available, and falls back to `xdg-open` if PowerShell is inaccessible (e.g., sandboxed environments).
+
+To use Linux GUI apps instead:
+
+```javascript
+await open('https://example.com', {app: {name: 'xdg-open'}});
+```
 
 ## Related
 
 - [open-cli](https://github.com/sindresorhus/open-cli) - CLI for this module
 - [open-editor](https://github.com/sindresorhus/open-editor) - Open files in your editor at a specific line and column
+- [reveal-file](https://github.com/sindresorhus/reveal-file) - Reveal a file in the system file manager

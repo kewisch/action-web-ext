@@ -1,6 +1,10 @@
+/* eslint-disable jsdoc/valid-types -- doesn't allow `readonly`.
+   TODO: remove eslint-disable when https://github.com/jsdoc-type-pratt-parser/jsdoc-type-pratt-parser/issues/164 is fixed
+*/
 /**
  * @typedef {{ readonly [type: string]: ReadonlyArray<string> }} VisitorKeys
  */
+/* eslint-enable jsdoc/valid-types -- doesn't allow `readonly string[]`. TODO: check why */
 
 /**
  * @type {VisitorKeys}
@@ -83,7 +87,8 @@ const KEYS = {
     ],
     ExportAllDeclaration: [
         "exported",
-        "source"
+        "source",
+        "attributes"
     ],
     ExportDefaultDeclaration: [
         "declaration"
@@ -91,11 +96,12 @@ const KEYS = {
     ExportNamedDeclaration: [
         "declaration",
         "specifiers",
-        "source"
+        "source",
+        "attributes"
     ],
     ExportSpecifier: [
-        "exported",
-        "local"
+        "local",
+        "exported"
     ],
     ExpressionStatement: [
         "expression"
@@ -132,15 +138,21 @@ const KEYS = {
         "consequent",
         "alternate"
     ],
+    ImportAttribute: [
+        "key",
+        "value"
+    ],
     ImportDeclaration: [
         "specifiers",
-        "source"
+        "source",
+        "attributes"
     ],
     ImportDefaultSpecifier: [
         "local"
     ],
     ImportExpression: [
-        "source"
+        "source",
+        "options"
     ],
     ImportNamespaceSpecifier: [
         "local"

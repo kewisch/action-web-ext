@@ -94,14 +94,16 @@ export class OpenElementStack {
         if (insertionIdx === this.stackTop) {
             this._updateCurrentElement();
         }
-        this.handler.onItemPush(this.current, this.currentTagId, insertionIdx === this.stackTop);
+        if (this.current && this.currentTagId !== undefined) {
+            this.handler.onItemPush(this.current, this.currentTagId, insertionIdx === this.stackTop);
+        }
     }
     popUntilTagNamePopped(tagName) {
         let targetIdx = this.stackTop + 1;
         do {
             targetIdx = this.tagIDs.lastIndexOf(tagName, targetIdx - 1);
         } while (targetIdx > 0 && this.treeAdapter.getNamespaceURI(this.items[targetIdx]) !== NS.HTML);
-        this.shortenToLength(targetIdx < 0 ? 0 : targetIdx);
+        this.shortenToLength(Math.max(targetIdx, 0));
     }
     shortenToLength(idx) {
         while (this.stackTop >= idx) {
@@ -116,11 +118,11 @@ export class OpenElementStack {
     }
     popUntilElementPopped(element) {
         const idx = this._indexOf(element);
-        this.shortenToLength(idx < 0 ? 0 : idx);
+        this.shortenToLength(Math.max(idx, 0));
     }
     popUntilPopped(tagNames, targetNS) {
         const idx = this._indexOfTagNames(tagNames, targetNS);
-        this.shortenToLength(idx < 0 ? 0 : idx);
+        this.shortenToLength(Math.max(idx, 0));
     }
     popUntilNumberedHeaderPopped() {
         this.popUntilPopped(NUMBERED_HEADERS, NS.HTML);
@@ -303,17 +305,19 @@ export class OpenElementStack {
     }
     //Implied end tags
     generateImpliedEndTags() {
-        while (IMPLICIT_END_TAG_REQUIRED.has(this.currentTagId)) {
+        while (this.currentTagId !== undefined && IMPLICIT_END_TAG_REQUIRED.has(this.currentTagId)) {
             this.pop();
         }
     }
     generateImpliedEndTagsThoroughly() {
-        while (IMPLICIT_END_TAG_REQUIRED_THOROUGHLY.has(this.currentTagId)) {
+        while (this.currentTagId !== undefined && IMPLICIT_END_TAG_REQUIRED_THOROUGHLY.has(this.currentTagId)) {
             this.pop();
         }
     }
     generateImpliedEndTagsWithExclusion(exclusionId) {
-        while (this.currentTagId !== exclusionId && IMPLICIT_END_TAG_REQUIRED_THOROUGHLY.has(this.currentTagId)) {
+        while (this.currentTagId !== undefined &&
+            this.currentTagId !== exclusionId &&
+            IMPLICIT_END_TAG_REQUIRED_THOROUGHLY.has(this.currentTagId)) {
             this.pop();
         }
     }

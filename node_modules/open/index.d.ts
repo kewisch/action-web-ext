@@ -8,6 +8,8 @@ export type Options = {
 
 	On Windows, you have to explicitly specify an app for it to be able to wait.
 
+	**Warning:** When opening URLs in browsers while the browser is already running, the `wait` option will not work as expected. Browsers use a single-instance architecture where new URLs are passed to the existing process, causing the command to exit immediately. Use the `newInstance` option on macOS to force a new browser instance, or avoid using `wait` with browsers.
+
 	@default false
 	*/
 	readonly wait?: boolean;
@@ -64,6 +66,7 @@ export type OpenAppOptions = {
 
 export type AppName =
 	| 'chrome'
+	| 'brave'
 	| 'firefox'
 	| 'edge'
 	| 'browser'
@@ -94,8 +97,6 @@ export const apps: Record<AppName, string | readonly string[]>;
 Open stuff like URLs, files, executables. Cross-platform.
 
 Uses the command `open` on macOS, `start` on Windows and `xdg-open` on other platforms.
-
-There is a caveat for [double-quotes on Windows](https://github.com/sindresorhus/open#double-quotes-on-windows) where all double-quotes are stripped from the `target`.
 
 @param target - The thing you want to open. Can be a URL, file, or executable. Opens in the default app for the file type. For example, URLs open in your default browser.
 @returns The [spawned child process](https://nodejs.org/api/child_process.html#child_process_class_childprocess). You would normally not need to use this for anything, but it can be useful if you'd like to attach custom event listeners or perform other operations directly on the spawned process.

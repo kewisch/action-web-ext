@@ -6,20 +6,14 @@
 "use strict";
 
 //------------------------------------------------------------------------------
-// Requirements
-//------------------------------------------------------------------------------
-
-const Graphemer = require("graphemer").default;
-
-//------------------------------------------------------------------------------
 // Helpers
 //------------------------------------------------------------------------------
 
 // eslint-disable-next-line no-control-regex -- intentionally including control characters
 const ASCII_REGEX = /^[\u0000-\u007f]*$/u;
 
-/** @type {Graphemer | undefined} */
-let splitter;
+/** @type {Intl.Segmenter | undefined} */
+let segmenter;
 
 //------------------------------------------------------------------------------
 // Public Interface
@@ -31,10 +25,10 @@ let splitter;
  * @returns {string} The converted string
  */
 function upperCaseFirst(string) {
-    if (string.length <= 1) {
-        return string.toUpperCase();
-    }
-    return string[0].toUpperCase() + string.slice(1);
+	if (string.length <= 1) {
+		return string.toUpperCase();
+	}
+	return string[0].toUpperCase() + string.slice(1);
 }
 
 /**
@@ -43,18 +37,22 @@ function upperCaseFirst(string) {
  * @returns {number} The number of graphemes in `value`.
  */
 function getGraphemeCount(value) {
-    if (ASCII_REGEX.test(value)) {
-        return value.length;
-    }
+	if (ASCII_REGEX.test(value)) {
+		return value.length;
+	}
 
-    if (!splitter) {
-        splitter = new Graphemer();
-    }
+	segmenter ??= new Intl.Segmenter("en-US"); // en-US locale should be supported everywhere
+	let graphemeCount = 0;
 
-    return splitter.countGraphemes(value);
+	// eslint-disable-next-line no-unused-vars -- for-of needs a variable
+	for (const unused of segmenter.segment(value)) {
+		graphemeCount++;
+	}
+
+	return graphemeCount;
 }
 
 module.exports = {
-    upperCaseFirst,
-    getGraphemeCount
+	upperCaseFirst,
+	getGraphemeCount,
 };

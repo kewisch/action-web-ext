@@ -4,8 +4,8 @@
 
 ## Install
 
-```
-$ npm install bundle-name
+```sh
+npm install bundle-name
 ```
 
 ## Usage

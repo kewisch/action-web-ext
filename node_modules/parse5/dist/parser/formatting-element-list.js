@@ -81,7 +81,7 @@ export class FormattingElementList {
     }
     removeEntry(entry) {
         const entryIndex = this.entries.indexOf(entry);
-        if (entryIndex >= 0) {
+        if (entryIndex !== -1) {
             this.entries.splice(entryIndex, 1);
         }
     }
@@ -92,11 +92,11 @@ export class FormattingElementList {
      */
     clearToLastMarker() {
         const markerIdx = this.entries.indexOf(MARKER);
-        if (markerIdx >= 0) {
-            this.entries.splice(0, markerIdx + 1);
+        if (markerIdx === -1) {
+            this.entries.length = 0;
         }
         else {
-            this.entries.length = 0;
+            this.entries.splice(0, markerIdx + 1);
         }
     }
     //Search

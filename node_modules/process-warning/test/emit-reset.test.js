@@ -1,11 +1,13 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const { createWarning } = require('../')
+const { withResolvers } = require('./promise')
 
 test('a limited warning can be re-set', t => {
   t.plan(4)
 
+  const { promise, resolve } = withResolvers()
   let count = 0
   process.on('warning', onWarning)
   function onWarning () {
@@ -19,18 +21,20 @@ test('a limited warning can be re-set', t => {
   })
 
   warn()
-  t.ok(warn.emitted)
+  t.assert.ok(warn.emitted)
 
   warn()
-  t.ok(warn.emitted)
+  t.assert.ok(warn.emitted)
 
   warn.emitted = false
   warn()
-  t.ok(warn.emitted)
+  t.assert.ok(warn.emitted)
 
   setImmediate(() => {
-    t.equal(count, 2)
+    t.assert.deepStrictEqual(count, 2)
     process.removeListener('warning', onWarning)
-    t.end()
+    resolve()
   })
+
+  return promise
 })

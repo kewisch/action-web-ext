@@ -1,6 +1,6 @@
 'use strict'
 
-const { test } = require('tap')
+const { test } = require('node:test')
 const { spawnSync } = require('node:child_process')
 const { resolve } = require('node:path')
 
@@ -14,7 +14,7 @@ test('--no-warnings is set in cli', t => {
   ])
 
   const stderr = child.stderr.toString()
-  t.equal(stderr, '')
+  t.assert.deepStrictEqual(stderr, '')
 })
 
 test('--no-warnings is not set in cli', t => {
@@ -24,7 +24,7 @@ test('--no-warnings is not set in cli', t => {
   ])
 
   const stderr = child.stderr.toString()
-  t.match(stderr, /\[CUSTDEP001\] DeprecationWarning: This is a deprecation warning/)
+  t.assert.match(stderr, /\[CUSTDEP001\] DeprecationWarning: This is a deprecation warning/)
 })
 
 test('NODE_NO_WARNINGS is set to 1', t => {
@@ -38,7 +38,7 @@ test('NODE_NO_WARNINGS is set to 1', t => {
   })
 
   const stderr = child.stderr.toString()
-  t.equal(stderr, '')
+  t.assert.deepStrictEqual(stderr, '')
 })
 
 test('NODE_NO_WARNINGS is set to 0', t => {
@@ -52,7 +52,7 @@ test('NODE_NO_WARNINGS is set to 0', t => {
   })
 
   const stderr = child.stderr.toString()
-  t.match(stderr, /\[CUSTDEP001\] DeprecationWarning: This is a deprecation warning/)
+  t.assert.match(stderr, /\[CUSTDEP001\] DeprecationWarning: This is a deprecation warning/)
 })
 
 test('NODE_NO_WARNINGS is not set', t => {
@@ -62,7 +62,7 @@ test('NODE_NO_WARNINGS is not set', t => {
   ])
 
   const stderr = child.stderr.toString()
-  t.match(stderr, /\[CUSTDEP001\] DeprecationWarning: This is a deprecation warning/)
+  t.assert.match(stderr, /\[CUSTDEP001\] DeprecationWarning: This is a deprecation warning/)
 })
 
 test('NODE_Options contains --no-warnings', t => {
@@ -76,5 +76,5 @@ test('NODE_Options contains --no-warnings', t => {
   })
 
   const stderr = child.stderr.toString()
-  t.equal(stderr, '')
+  t.assert.deepStrictEqual(stderr, '')
 })

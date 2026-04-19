@@ -122,7 +122,7 @@ export declare class Parser<T extends TreeAdapterTypeMap> implements TokenHandle
     onItemPush(node: T['parentNode'], tid: number, isTop: boolean): void;
     /** @internal */
     onItemPop(node: T['parentNode'], isTop: boolean): void;
-    protected _setContextModes(current: T['parentNode'], tid: number): void;
+    protected _setContextModes(current: T['parentNode'] | undefined, tid: number | undefined): void;
     /** @protected */
     _switchToTextParsing(currentToken: TagToken, nextTokenizerState: (typeof TokenizerMode)[keyof typeof TokenizerMode]): void;
     switchToPlaintextParsing(): void;
