@@ -1,7 +1,8 @@
 'use strict'
 
-const test = require('tap').test
+const { test } = require('node:test')
 const { createWarning } = require('..')
+const { withResolvers } = require('./promise')
 
 test('emit should emit a given code unlimited times', t => {
   t.plan(50)
@@ -10,13 +11,15 @@ test('emit should emit a given code unlimited times', t => {
   const expectedRun = []
   const times = 10
 
+  const { promise, resolve } = withResolvers()
+
   process.on('warning', onWarning)
   function onWarning (warning) {
-    t.equal(warning.name, 'TestDeprecation')
-    t.equal(warning.code, 'CODE')
-    t.equal(warning.message, 'Hello world')
-    t.ok(warn.emitted)
-    t.equal(runs++, expectedRun.shift())
+    t.assert.deepStrictEqual(warning.name, 'TestDeprecation')
+    t.assert.deepStrictEqual(warning.code, 'CODE')
+    t.assert.deepStrictEqual(warning.message, 'Hello world')
+    t.assert.ok(warn.emitted)
+    t.assert.deepStrictEqual(runs++, expectedRun.shift())
   }
 
   const warn = createWarning({
@@ -32,6 +35,8 @@ test('emit should emit a given code unlimited times', t => {
   }
   setImmediate(() => {
     process.removeListener('warning', onWarning)
-    t.end()
+    resolve()
   })
+
+  return promise
 })

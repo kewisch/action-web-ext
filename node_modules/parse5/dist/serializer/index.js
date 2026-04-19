@@ -1,5 +1,5 @@
 import { TAG_NAMES as $, NS, hasUnescapedText } from '../common/html.js';
-import { escapeText, escapeAttribute } from 'entities/lib/escape.js';
+import { escapeText, escapeAttribute } from 'entities/escape';
 import { defaultTreeAdapter } from '../tree-adapters/default.js';
 // Sets
 const VOID_ELEMENTS = new Set([

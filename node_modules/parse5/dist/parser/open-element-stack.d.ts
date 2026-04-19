@@ -9,10 +9,10 @@ export declare class OpenElementStack<T extends TreeAdapterTypeMap> {
     private handler;
     items: T['parentNode'][];
     tagIDs: $[];
-    current: T['parentNode'];
+    current: T['parentNode'] | undefined;
     stackTop: number;
     tmplCount: number;
-    currentTagId: $;
+    currentTagId: number | undefined;
     get currentTmplContentOrNode(): T['parentNode'];
     constructor(document: T['document'], treeAdapter: TreeAdapter<T>, handler: StackHandler<T>);
     private _indexOf;

@@ -5,8 +5,8 @@
 
 ## Install
 
-```
-$ npm install default-browser-id
+```sh
+npm install default-browser-id
 ```
 
 ## Usage

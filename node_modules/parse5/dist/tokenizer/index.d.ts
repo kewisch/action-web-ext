@@ -1,6 +1,6 @@
 import { Preprocessor } from './preprocessor.js';
 import { type Token, type CharacterToken, type DoctypeToken, type TagToken, type EOFToken, type CommentToken, type Attribute, type Location } from '../common/token.js';
-import { EntityDecoder } from 'entities/lib/decode.js';
+import { EntityDecoder } from 'entities/decode';
 import { ERR, type ParserErrorHandler } from '../common/error-codes.js';
 declare const enum State {
     DATA = 0,

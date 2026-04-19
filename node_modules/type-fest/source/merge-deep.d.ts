@@ -1,21 +1,20 @@
 import type {ConditionalSimplifyDeep} from './conditional-simplify';
 import type {OmitIndexSignature} from './omit-index-signature';
 import type {PickIndexSignature} from './pick-index-signature';
-import type {EnforceOptional} from './enforce-optional';
 import type {Merge} from './merge';
 import type {
-	ArrayTail,
 	FirstArrayElement,
 	IsBothExtends,
-	NonEmptyTuple,
 	UnknownArrayOrTuple,
-	UnknownRecord,
 } from './internal';
+import type {NonEmptyTuple} from './non-empty-tuple';
+import type {ArrayTail} from './array-tail';
+import type {UnknownRecord} from './unknown-record';
+import type {EnforceOptional} from './enforce-optional';
+import type {SimplifyDeep} from './simplify-deep';
+import type {UnknownArray} from './unknown-array';
 
-/**
-Deeply simplifies an object excluding iterables and functions. Used internally to improve the UX and accept both interfaces and type aliases as inputs.
-*/
-type SimplifyDeep<Type> = ConditionalSimplifyDeep<Type, Function | Iterable<unknown>, object>;
+type SimplifyDeepExcludeArray<T> = SimplifyDeep<T, UnknownArray>;
 
 /**
 Try to merge two record properties or return the source property value, preserving `undefined` properties values in both cases.
@@ -30,23 +29,28 @@ type MergeDeepRecordProperty<
 
 /**
 Walk through the union of the keys of the two objects and test in which object the properties are defined.
-- If the source does not contain the key, the value of the destination is returned.
-- If the source contains the key and the destination does not contain the key, the value of the source is returned.
-- If both contain the key, try to merge according to the chosen {@link MergeDeepOptions options} or return the source if unable to merge.
+Rules:
+1. If the source does not contain the key, the value of the destination is returned.
+2. If the source contains the key and the destination does not contain the key, the value of the source is returned.
+3. If both contain the key, try to merge according to the chosen {@link MergeDeepOptions options} or return the source if unable to merge.
 */
 type DoMergeDeepRecord<
 	Destination extends UnknownRecord,
 	Source extends UnknownRecord,
 	Options extends MergeDeepInternalOptions,
-> = EnforceOptional<{
-	[Key in keyof Destination | keyof Source]: Key extends keyof Source
-		? Key extends keyof Destination
-			? MergeDeepRecordProperty<Destination[Key], Source[Key], Options>
-			: Source[Key]
-		: Key extends keyof Destination
-			? Destination[Key]
-			: never;
-}>;
+> =
+// Case in rule 1: The destination contains the key but the source doesn't.
+{
+	[Key in keyof Destination as Key extends keyof Source ? never : Key]: Destination[Key];
+}
+// Case in rule 2: The source contains the key but the destination doesn't.
+& {
+	[Key in keyof Source as Key extends keyof Destination ? never : Key]: Source[Key];
+}
+// Case in rule 3: Both the source and the destination contain the key.
+& {
+	[Key in keyof Source as Key extends keyof Destination ? Key : never]: MergeDeepRecordProperty<Destination[Key], Source[Key], Options>;
+};
 
 /**
 Wrapper around {@link DoMergeDeepRecord} which preserves index signatures.
@@ -57,6 +61,9 @@ type MergeDeepRecord<
 	Options extends MergeDeepInternalOptions,
 > = DoMergeDeepRecord<OmitIndexSignature<Destination>, OmitIndexSignature<Source>, Options>
 & Merge<PickIndexSignature<Destination>, PickIndexSignature<Source>>;
+
+// Helper to avoid computing ArrayTail twice.
+type PickRestTypeHelper<Tail extends UnknownArrayOrTuple, Type> = Tail extends [] ? Type : PickRestType<Tail>;
 
 /**
 Pick the rest type.
@@ -71,8 +78,17 @@ type Rest5 = PickRestType<string[]>; // => string[]
 ```
 */
 type PickRestType<Type extends UnknownArrayOrTuple> = number extends Type['length']
-	? ArrayTail<Type> extends [] ? Type : PickRestType<ArrayTail<Type>>
+	? PickRestTypeHelper<ArrayTail<Type>, Type>
 	: [];
+
+// Helper to avoid computing ArrayTail twice.
+type OmitRestTypeHelper<
+	Tail extends UnknownArrayOrTuple,
+	Type extends UnknownArrayOrTuple,
+	Result extends UnknownArrayOrTuple = [],
+> = Tail extends []
+	? Result
+	: OmitRestType<Tail, [...Result, FirstArrayElement<Type>]>;
 
 /**
 Omit the rest type.
@@ -88,7 +104,7 @@ type Tuple6 = OmitRestType<string[]>; // => []
 ```
 */
 type OmitRestType<Type extends UnknownArrayOrTuple, Result extends UnknownArrayOrTuple = []> = number extends Type['length']
-	? ArrayTail<Type> extends [] ? Result : OmitRestType<ArrayTail<Type>, [...Result, FirstArrayElement<Type>]>
+	? OmitRestTypeHelper<ArrayTail<Type>, Type, Result>
 	: Type;
 
 // Utility to avoid picking two times the type.
@@ -234,7 +250,7 @@ type MergeDeepArrayRecursive<
 		: DoMergeArrayOrTuple<Destination, Source, Options>
 	: Destination[number] extends UnknownRecord
 		? Source[number] extends UnknownRecord
-			? Array<SimplifyDeep<MergeDeepRecord<Destination[number], Source[number], Options>>>
+			? Array<SimplifyDeepExcludeArray<MergeDeepRecord<Destination[number], Source[number], Options>>>
 			: DoMergeArrayOrTuple<Destination, Source, Options>
 		: DoMergeArrayOrTuple<Destination, Source, Options>;
 
@@ -277,7 +293,7 @@ type MergeDeepOrReturn<
 	Destination,
 	Source,
 	Options extends MergeDeepInternalOptions,
-> = SimplifyDeep<[undefined] extends [Destination | Source]
+> = SimplifyDeepExcludeArray<[undefined] extends [Destination | Source]
 	? DefaultType
 	: Destination extends UnknownRecord
 		? Source extends UnknownRecord
@@ -285,7 +301,7 @@ type MergeDeepOrReturn<
 			: DefaultType
 		: Destination extends UnknownArrayOrTuple
 			? Source extends UnknownArrayOrTuple
-				? MergeDeepArrayOrTuple<Destination, Source, Merge<Options, {spreadTopLevelArrays: false}>>
+				? MergeDeepArrayOrTuple<Destination, Source, EnforceOptional<Merge<Options, {spreadTopLevelArrays: false}>>>
 				: DefaultType
 			: DefaultType>;
 
@@ -306,7 +322,7 @@ export type MergeDeepOptions = {
 
 	Note: Top-level arrays and tuples are always spread.
 
-	@default 'spread'
+	@default 'replace'
 	*/
 	arrayMergeMode?: ArrayMergeMode;
 
@@ -340,7 +356,7 @@ type DefaultMergeDeepOptions<Options extends MergeDeepOptions> = Merge<{
 /**
 This utility selects the correct entry point with the corresponding default options. This avoids re-merging the options at each iteration.
 */
-type MergeDeepWithDefaultOptions<Destination, Source, Options extends MergeDeepOptions> = SimplifyDeep<
+type MergeDeepWithDefaultOptions<Destination, Source, Options extends MergeDeepOptions> = SimplifyDeepExcludeArray<
 [undefined] extends [Destination | Source]
 	? never
 	: Destination extends UnknownRecord
@@ -464,7 +480,7 @@ function mergeDeep<Destination, Source, Options extends MergeDeepOptions = {}>(
 @category Utilities
 */
 export type MergeDeep<Destination, Source, Options extends MergeDeepOptions = {}> = MergeDeepWithDefaultOptions<
-SimplifyDeep<Destination>,
-SimplifyDeep<Source>,
+SimplifyDeepExcludeArray<Destination>,
+SimplifyDeepExcludeArray<Source>,
 Options
 >;

@@ -2,7 +2,7 @@
 
 const metadata = Symbol.for('pino.metadata')
 const split = require('split2')
-const { Duplex } = require('readable-stream')
+const { Duplex } = require('stream')
 const { parentPort, workerData } = require('worker_threads')
 
 function createDeferred () {

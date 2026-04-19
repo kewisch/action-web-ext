@@ -22,7 +22,8 @@ export async function deriveKey(publicKey, privateKey, algorithm, keyLength, apu
     }
     else {
         length =
-            Math.ceil(parseInt(publicKey.algorithm.namedCurve.substr(-3), 10) / 8) << 3;
+            Math.ceil(parseInt(publicKey.algorithm.namedCurve.substr(-3), 10) / 8) <<
+                3;
     }
     const sharedSecret = new Uint8Array(await crypto.subtle.deriveBits({
         name: publicKey.algorithm.name,
