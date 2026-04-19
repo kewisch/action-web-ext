@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- * Portions Copyright (C) Philipp Kewisch, 2019 */
+ * Portions Copyright (C) Philipp Kewisch, 2026 */
 
 import path from "path";
 import fs from "fs";
@@ -9,7 +9,7 @@ import fs from "fs";
 import JSZip from "jszip";
 import webExt from "web-ext";
 import { consoleStream } from "web-ext/util/logger";
-import { signAddon as signAddonV5 } from "../node_modules/web-ext/lib/util/submit-addon.js";
+import { signAddon as signAddonV5 } from "web-ext/util/submit-addon";
 import { signAddon as signAddonV4 } from "sign-addon";
 
 import * as github from "@actions/github";
