@@ -14,7 +14,7 @@ jobs:
       name: ${{ steps.web-ext-build.outputs.name }}
     steps:
       - name: "Checkout"
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Code Lint"
         run: npm run lint
@@ -50,7 +50,7 @@ jobs:
           channel: unlisted
 
       - name: "Upload unsigned build"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: unsigned.xpi
           path: ${{ steps.web-ext-build.outputs.target }}
@@ -65,11 +65,11 @@ jobs:
     steps:
       - name: "Checkout"
         if: env.HAS_SIGN_KEY
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Get release build"
         if: env.HAS_SIGN_KEY
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: unsigned.xpi
           path: web-ext-artifacts
@@ -105,7 +105,7 @@ jobs:
 
       - name: "Upload AMO signed"
         if: env.HAS_SIGN_KEY
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: amo-signed.xpi
           path: ${{ steps.web-ext-sign-amo.outputs.target }}
@@ -120,11 +120,11 @@ jobs:
     steps:
       - name: "Checkout"
         if: env.HAS_SIGN_KEY
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: "Get release build"
         if: env.HAS_SIGN_KEY
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: unsigned.xpi
           path: web-ext-artifacts
