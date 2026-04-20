@@ -1,2 +1,3 @@
 node_modules
 test/extension/web-ext-artifacts
+dist/index.cjs.map

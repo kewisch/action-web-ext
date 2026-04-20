@@ -7,11 +7,16 @@
     "type": "git",
     "url": "git://github.com/kewisch/action-web-ext.git"
   },
-  "main": "src/index.js",
+  "main": "dist/index.cjs",
   "author": "Philipp Kewisch <mozilla@kewis.ch>",
   "license": "MPL-2.0",
   "scripts": {
-    "lint": "eslint"
+    "build": "webpack --config webpack.config.cjs",
+    "build:dist": "npm run build",
+    "lint": "eslint . --ignore-pattern dist/",
+    "check:lint": "INPUT_CMD=lint INPUT_SOURCE=test/extension INPUT_CHANNEL=unlisted node dist/index.cjs",
+    "check:build": "INPUT_CMD=build INPUT_SOURCE=test/extension INPUT_CHANNEL=unlisted INPUT_ARTIFACTS=web-ext-artifacts node dist/index.cjs",
+    "check": "npm run check:lint && npm run check:build"
   },
   "dependencies": {
     "@actions/core": "^3.0.0",
@@ -22,6 +27,8 @@
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^5.10.0",
-    "eslint": "^10.2.1"
+    "eslint": "^10.2.1",
+    "webpack": "^5.102.1",
+    "webpack-cli": "^6.0.1"
   }
 }
