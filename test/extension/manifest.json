@@ -14,7 +14,11 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "test-action-web-ext@mozilla.kewis.ch"
+      "id": "test-action-web-ext@mozilla.kewis.ch",
+      "data_collection_permissions": {
+        "required": ["none"],
+        "optional": []
+      }
     }
   },
   "content_scripts": [
