@@ -1,2 +1,0 @@
-export type Callback<T> = (err: Error | null, result?: T) => void;
-//# sourceMappingURL=Callback.d.ts.map
