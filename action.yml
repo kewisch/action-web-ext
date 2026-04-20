@@ -87,4 +87,4 @@ inputs:
     required: false
 runs:
   using: node24
-  main: src/index.js
+  main: dist/index.cjs

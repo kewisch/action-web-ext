@@ -16,6 +16,9 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v6
 
+      - name: "Install dependencies"
+        run: npm ci
+
       - name: "Code Lint"
         run: npm run lint
 
